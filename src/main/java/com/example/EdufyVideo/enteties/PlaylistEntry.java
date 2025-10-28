@@ -2,6 +2,8 @@ package com.example.EdufyVideo.enteties;
 
 import jakarta.persistence.*;
 
+
+//ED-122-AA
 @Entity
 @Table(name = "playlist_entry",
         uniqueConstraints = {
@@ -15,9 +17,9 @@ public class PlaylistEntry {
     @Column(name = "playlist_entry_id")
     private Long id;
 
-  /*  @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id", nullable = false)
-    private Playlist playlist;*/
+    private VideoPlaylist playlist;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_clip_id", nullable = false)
@@ -28,22 +30,22 @@ public class PlaylistEntry {
 
     public PlaylistEntry() {}
 
-    public PlaylistEntry(Playlist playlist, VideoClip videoClip, Integer position) {
-        //this.playlist = playlist;
+    public PlaylistEntry(VideoPlaylist videoPlaylist, VideoClip videoClip, Integer position) {
+        //this.videoPlaylist = videoPlaylist;
         this.videoClip = videoClip;
         this.position = position;
     }
 
-    public PlaylistEntry(Long id, Playlist playlist, VideoClip videoClip, Integer position) {
+    public PlaylistEntry(Long id, VideoPlaylist videoPlaylist, VideoClip videoClip, Integer position) {
         this.id = id;
-        //this.playlist = playlist;
+        this.playlist = videoPlaylist;
         this.videoClip = videoClip;
         this.position = position;
     }
 
     public PlaylistEntry(PlaylistEntry playlistEntry) {
         this.id = playlistEntry.id;
-        //this.playlist = playlistEntry.playlist;
+        this.playlist = playlistEntry.playlist;
         this.videoClip = playlistEntry.videoClip;
         this.position = playlistEntry.position;
     }
@@ -56,13 +58,13 @@ public class PlaylistEntry {
         this.id = id;
     }
 
-/*    public Playlist getPlaylist() {
+    public VideoPlaylist getPlaylist() {
         return playlist;
     }
 
-    public void setPlaylist(Playlist playlist) {
+    public void setPlaylist(VideoPlaylist playlist) {
         this.playlist = playlist;
-    }*/
+    }
 
     public VideoClip getVideoClip() {
         return videoClip;
@@ -84,7 +86,7 @@ public class PlaylistEntry {
     public String toString() {
         return "PlaylistEntry{" +
                 "id=" + id +
-               // ", playlist=" + playlist +
+                ", playlist=" + playlist +
                 ", videoClip=" + videoClip +
                 ", position=" + position +
                 '}';

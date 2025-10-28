@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+//ED-122-AA
 @Entity
 @Table(name = "video_clip")
 public class VideoClip {
