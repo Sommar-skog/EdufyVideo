@@ -1,6 +1,7 @@
-package com.example.EdufyVideo.enteties;
+package com.example.models.enteties;
 
 
+import com.example.models.dtos.CreatorDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ public class VideoPlaylist {
     @Column(name = "video_playlist_title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "video_playlist_url", nullable = false)
+    @Column(name = "video_playlist_url", nullable = false, unique = true)
     private String url;
 
     @Column(name = "video_playlist_description", nullable = false)
@@ -33,28 +34,29 @@ public class VideoPlaylist {
     @OrderBy("position ASC")
     private List<PlaylistEntry> entryList = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "video_playlist_creator",
-            joinColumns = @JoinColumn(name = "video_playlist_id"),
-            inverseJoinColumns = @JoinColumn(name = "creator_id")
+    //ED-124-AA
+    @ElementCollection
+    @CollectionTable(
+            name = "video_playlist_creators",
+            joinColumns = @JoinColumn(name = "video_playlist_id")
     )
-    private List<Creator> creators = new ArrayList<>();
+    @Column(name = "creator_id", nullable = false)
+    private List<Long> creatorIds = new ArrayList<>();
 
     @Column(name = "video_playlist_active")
-    private boolean active;
+    private boolean active = true;
 
     public VideoPlaylist() {
 
     }
 
-    public VideoPlaylist(String title, String url, String description, LocalDate creationDate, List<PlaylistEntry> entryList, List<Creator> creators, boolean active) {
+    public VideoPlaylist(String title, String url, String description, LocalDate creationDate, List<PlaylistEntry> entryList, List<Long> creatorIds, boolean active) {
         this.title = title;
         this.url = url;
         this.description = description;
         this.creationDate = creationDate;
         this.entryList = entryList;
-        this.creators = creators;
+        this.creatorIds = creatorIds;
         this.active = active;
     }
 
@@ -64,7 +66,7 @@ public class VideoPlaylist {
         this.description = videoPlaylist.description;
         this.creationDate = videoPlaylist.creationDate;
         this.entryList = videoPlaylist.entryList;
-        this.creators = videoPlaylist.creators;
+        this.creatorIds = videoPlaylist.creatorIds;
         this.active = videoPlaylist.active;
     }
 
@@ -116,12 +118,12 @@ public class VideoPlaylist {
         this.entryList = entryList;
     }
 
-    public List<Creator> getCreators() {
-        return creators;
+    public List<Long> getCreatorIds() {
+        return creatorIds;
     }
 
-    public void setCreators(List<Creator> creators) {
-        this.creators = creators;
+    public void setCreatorIds(List<Long> creatorIds) {
+        this.creatorIds = creatorIds;
     }
 
     public boolean isActive() {
@@ -141,7 +143,7 @@ public class VideoPlaylist {
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 ", entryList=" + entryList +
-                ", creators=" + creators +
+                ", creatorIds=" + creatorIds +
                 ", active=" + active +
                 '}';
     }
