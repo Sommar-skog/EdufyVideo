@@ -1,5 +1,6 @@
 package com.example.models.enteties;
 
+import com.example.models.dtos.GenreDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -44,13 +45,14 @@ public class VideoClip {
     @Column(name = "creator_id", nullable = false)
     private List<Long> creatorIds = new ArrayList<>();
 
-    /*@ManyToMany
-    @JoinTable(
-            name = "video_clip_genre",
-            joinColumns = @JoinColumn(name = "video_clip_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    //ED-125-AA
+    @ElementCollection
+    @CollectionTable(
+            name = "video_playlist_genres",
+            joinColumns = @JoinColumn(name = "video_playlist_id")
     )
-    private List<Genre> genres;*/
+    @Column(name = "genre_id", nullable = false)
+    private List<Long> genresIds = new ArrayList<>();
 
     @OneToMany(mappedBy = "videoClip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistEntry> playlistEntries = new ArrayList<>();
@@ -60,7 +62,7 @@ public class VideoClip {
 
     public VideoClip() {}
 
-    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> creatorIds, List<Genre> genres, List<PlaylistEntry> entries, Boolean active) {
+    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> creatorIds, List<Long> genresIds, List<PlaylistEntry> entries, Boolean active) {
         this.id = id;
         this.title = title;
         this.url = url;
@@ -69,7 +71,7 @@ public class VideoClip {
         this.releaseDate = releaseDate;
         this.timesPlayed = timesPlayed;
         this.creatorIds = creatorIds;
-        //this.genres = genres;
+        this.genresIds = genresIds;
         this.playlistEntries = entries;
         this.active = active;
     }
@@ -83,7 +85,7 @@ public class VideoClip {
         this.releaseDate = videoClip.releaseDate;
         this.timesPlayed = videoClip.timesPlayed;
         this.creatorIds = videoClip.creatorIds;
-        /*this.genres = videoClip.genres;*/
+        this.genresIds = videoClip.genresIds;
         this.playlistEntries = videoClip.playlistEntries;
         this.active = videoClip.active;
     }
@@ -152,13 +154,13 @@ public class VideoClip {
         this.creatorIds = creatorIds;
     }
 
-    /*    public List<Genre> getGenres() {
-        return genres;
+    public List<Long> getGenresIds() {
+        return genresIds;
     }
 
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }*/
+    public void setGenresIds(List<Long> genresIds) {
+        this.genresIds = genresIds;
+    }
 
     public List<PlaylistEntry> getPlaylistEntries() {
         return playlistEntries;
@@ -187,7 +189,7 @@ public class VideoClip {
                 ", releaseDate=" + releaseDate +
                 ", timesPlayed=" + timesPlayed +
                 ", creatorIds=" + creatorIds +
-//                ", genres=" + genres +
+                ", genresIds=" + genresIds +
                 ", playlistEntries=" + playlistEntries +
                 ", active=" + active +
                 '}';
