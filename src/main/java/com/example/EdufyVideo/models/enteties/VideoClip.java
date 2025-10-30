@@ -1,6 +1,5 @@
-package com.example.models.enteties;
+package com.example.EdufyVideo.models.enteties;
 
-import com.example.models.dtos.GenreDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

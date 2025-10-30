@@ -1,9 +1,8 @@
-package com.example.models.dtos;
+package com.example.EdufyVideo.models.dtos;
 
 
-import com.example.models.enteties.VideoClip;
-import com.example.models.enteties.VideoPlaylist;
-import org.bouncycastle.jcajce.provider.asymmetric.edec.KeyPairGeneratorSpi;
+import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 
 import java.util.List;
 
