@@ -2,6 +2,7 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class VideoServiceImpl implements VideoService {
         VideoClip video = videoRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("VideoClip", "id", id));
 
-        return null;
+        //TODO implement API-response from Genre and Creator
+        return VideoClipResponseMapper.toDto(video);
     }
 }
