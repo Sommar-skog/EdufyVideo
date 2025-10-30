@@ -1,4 +1,4 @@
-package com.example.models.dtos;
+package com.example.EdufyVideo.models.dtos;
 
 public class GenreDTO {
 
