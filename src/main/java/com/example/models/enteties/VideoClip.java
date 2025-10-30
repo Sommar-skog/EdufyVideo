@@ -39,8 +39,8 @@ public class VideoClip {
     //ED-124-AA
     @ElementCollection
     @CollectionTable(
-            name = "video_playlist_creators",
-            joinColumns = @JoinColumn(name = "video_playlist_id")
+            name = "video_clip_creators",
+            joinColumns = @JoinColumn(name = "video_clip_id")
     )
     @Column(name = "creator_id", nullable = false)
     private List<Long> creatorIds = new ArrayList<>();
@@ -48,8 +48,8 @@ public class VideoClip {
     //ED-125-AA
     @ElementCollection
     @CollectionTable(
-            name = "video_playlist_genres",
-            joinColumns = @JoinColumn(name = "video_playlist_id")
+            name = "video_clip_genres",
+            joinColumns = @JoinColumn(name = "video_clip_id")
     )
     @Column(name = "genre_id", nullable = false)
     private List<Long> genresIds = new ArrayList<>();
