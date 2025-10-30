@@ -13,11 +13,9 @@ public class VideoClipResponseMapper {
     //ED-78-AA
     //TODO lägg till inparametrar för API-anrop
     public static VideoClipResponseDTO toDto(VideoClip videoClip) {
-
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
         List<String> genreNames = getGenreNames(videoClip);
         List<String> creatorUsernames = getCreators(videoClip);
-
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
         dto.setId(videoClip.getId());
@@ -40,7 +38,7 @@ public class VideoClipResponseMapper {
         if (videoClip.getCreatorIds() != null) {
             for (Long creatorId : videoClip.getCreatorIds()) {
                 //TODO API-anrop eller inskickat från service
-                String creatorUsername = " "; //implement creator
+                String creatorUsername = "Creator id: " + creatorId; //TODO implement creator
                 creatorUsernames.add(creatorUsername != null ? creatorUsername : "CREATOR UNKNOWN");
             }
         }
@@ -53,7 +51,7 @@ public class VideoClipResponseMapper {
         if (videoClip.getGenresIds() != null) {
             for (Long genreId : videoClip.getGenresIds()) {
                 //TODO API-anrop eller inskickat från service
-                String genreName = " "; //implement genre
+                String genreName = "Genre id: " + genreId;  //TODO implement genre
                 genreNames.add(genreName != null ? genreName : "UNKNOWN");
             }
         }

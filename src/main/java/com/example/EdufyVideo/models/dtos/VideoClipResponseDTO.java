@@ -8,13 +8,15 @@ public class VideoClipResponseDTO {
 
     private Long id;
     private String title;
-    private String url;
+    private List<String> creatorUsernames;
     private String description;
+    private List<String> genreNames;
+    private String url;
     private LocalTime length;
     private LocalDate releaseDate;
     private Long timesPlayed;
-    private List<String> creatorUsernames;
-    private List<String> genreNames;
+
+
     private List<PlaylistInfoDTO> playlists;
 
     public Long getId() {
