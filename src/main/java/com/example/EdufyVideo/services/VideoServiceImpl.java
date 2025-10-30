@@ -1,5 +1,6 @@
 package com.example.EdufyVideo.services;
 
+import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.repositories.VideoRepository;
@@ -22,7 +23,9 @@ public class VideoServiceImpl implements VideoService {
     //ED-78-AA
     @Override
     public VideoClipResponseDTO getVideoClipById(Long id) {
-        VideoClip video = videoRepository.findById(id).orElseThrow()
+        VideoClip video = videoRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("VideoClip", "id", id));
+
         return null;
     }
 }
