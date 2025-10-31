@@ -50,7 +50,8 @@ public class VideoPlaylistResponseMapper {
             videoPlaylist.getEntryList().stream()
                     .sorted(Comparator.comparingInt(PlaylistEntry::getPosition))
                     .forEach(entry -> {
-                        VideoClipInfoDTO videoClipInfoDTO = new VideoClipInfoDTO(entry);
+                        VideoClipInfoDTO  dto= new VideoClipInfoDTO(entry);
+                        videoClipEntries.add(dto);
                     });
         }
         return videoClipEntries;
