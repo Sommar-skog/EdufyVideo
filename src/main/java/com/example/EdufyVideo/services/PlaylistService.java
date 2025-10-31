@@ -1,4 +1,7 @@
 package com.example.EdufyVideo.services;
 
-public class PlaylistService {
+public interface PlaylistService {
+
+    //ED-79-AA
+    VideoPlaylistResponseDTO getVideoPlaylistById (Long id);
 }

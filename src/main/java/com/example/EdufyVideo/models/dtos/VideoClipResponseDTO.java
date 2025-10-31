@@ -1,9 +1,12 @@
 package com.example.EdufyVideo.models.dtos;
 
+import com.example.EdufyVideo.models.enteties.VideoClip;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+//ED-78-AA
 public class VideoClipResponseDTO {
 
     private Long id;
@@ -15,9 +18,36 @@ public class VideoClipResponseDTO {
     private LocalTime length;
     private LocalDate releaseDate;
     private Long timesPlayed;
-
-
     private List<PlaylistInfoDTO> playlists;
+
+    //ED-79-AA
+    public VideoClipResponseDTO() {}
+
+    //ED-79-AA
+    public VideoClipResponseDTO(Long id, String title, List<String> creatorUsernames, String description, List<String> genreNames, String url, LocalTime length, LocalDate releaseDate, List<PlaylistInfoDTO> playlists) {
+        this.id = id;
+        this.title = title;
+        this.creatorUsernames = creatorUsernames;
+        this.description = description;
+        this.genreNames = genreNames;
+        this.url = url;
+        this.length = length;
+        this.releaseDate = releaseDate;
+        this.playlists = playlists;
+    }
+
+    //ED-79-AA
+    public VideoClipResponseDTO(VideoClip videoClip, List<PlaylistInfoDTO> playlists, List<String> creatorUsernames, List<String> genreNames) {
+        this.id = videoClip.getId();
+        this.title = videoClip.getTitle();
+        this.creatorUsernames = creatorUsernames;
+        this.genreNames = genreNames;
+        this.description = videoClip.getDescription();
+        this.url = videoClip.getUrl();
+        this.length = videoClip.getLength();
+        this.releaseDate = videoClip.getReleaseDate();
+        this.playlists = playlists;
+    }
 
     public Long getId() {
         return id;
