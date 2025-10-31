@@ -1,4 +1,9 @@
 package com.example.EdufyVideo.services;
 
-public class PlaylistService {
+import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+
+public interface PlaylistService {
+
+    //ED-79-AA
+    VideoPlaylistResponseDTO getVideoPlaylistById (Long id);
 }
