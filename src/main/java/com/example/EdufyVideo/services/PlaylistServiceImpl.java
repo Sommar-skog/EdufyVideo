@@ -2,6 +2,7 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,6 @@ public class PlaylistServiceImpl implements PlaylistService {
                 new ResourceNotFoundException("VideoPlaylist", "id", id));
 
         //TODO implement API-response from Creator
-        return null;
+        return VideoPlaylistResponseMapper.toDto(playlist);
     }
 }

@@ -15,6 +15,7 @@ public class VideoPlaylistResponseDTO {
     private String url;
     private LocalDate creationDate;
     private List<VideoClipInfoDTO> videoClipEntries;
+    private boolean active;
 
     public VideoPlaylistResponseDTO() {
 
@@ -28,9 +29,10 @@ public class VideoPlaylistResponseDTO {
         this.creationDate = videoPlaylist.getCreationDate();
         this.creatorUsernames = creatorUsernames;
         this.videoClipEntries = videoClipEntries;
+        this.active = videoPlaylist.isActive();
     }
 
-    public VideoPlaylistResponseDTO(Long id, String title, List<String> creatorUsernames, String description, String url, LocalDate creationDate, List<VideoClipInfoDTO> videoClipEntries) {
+    public VideoPlaylistResponseDTO(Long id, String title, List<String> creatorUsernames, String description, String url, LocalDate creationDate, List<VideoClipInfoDTO> videoClipEntries, boolean active) {
         this.id = id;
         this.title = title;
         this.creatorUsernames = creatorUsernames;
@@ -38,6 +40,7 @@ public class VideoPlaylistResponseDTO {
         this.url = url;
         this.creationDate = creationDate;
         this.videoClipEntries = videoClipEntries;
+        this.active = active;
     }
 
     public Long getId() {
@@ -96,6 +99,14 @@ public class VideoPlaylistResponseDTO {
         this.videoClipEntries = videoClipEntries;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "VideoPlaylistResponseDTO{" +
@@ -106,6 +117,7 @@ public class VideoPlaylistResponseDTO {
                 ", url='" + url + '\'' +
                 ", creationDate=" + creationDate +
                 ", videoClipEntries=" + videoClipEntries +
+                ", active=" + active +
                 '}';
     }
 }

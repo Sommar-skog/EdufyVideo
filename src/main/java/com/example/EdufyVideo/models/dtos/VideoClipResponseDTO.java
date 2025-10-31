@@ -19,12 +19,13 @@ public class VideoClipResponseDTO {
     private LocalDate releaseDate;
     private Long timesPlayed;
     private List<PlaylistInfoDTO> playlists;
+    private boolean active;
 
     //ED-79-AA
     public VideoClipResponseDTO() {}
 
     //ED-79-AA
-    public VideoClipResponseDTO(Long id, String title, List<String> creatorUsernames, String description, List<String> genreNames, String url, LocalTime length, LocalDate releaseDate, List<PlaylistInfoDTO> playlists) {
+    public VideoClipResponseDTO(Long id, String title, List<String> creatorUsernames, String description, List<String> genreNames, String url, LocalTime length, LocalDate releaseDate, List<PlaylistInfoDTO> playlists, boolean active) {
         this.id = id;
         this.title = title;
         this.creatorUsernames = creatorUsernames;
@@ -34,6 +35,7 @@ public class VideoClipResponseDTO {
         this.length = length;
         this.releaseDate = releaseDate;
         this.playlists = playlists;
+        this.active = active;
     }
 
     //ED-79-AA
@@ -47,6 +49,7 @@ public class VideoClipResponseDTO {
         this.length = videoClip.getLength();
         this.releaseDate = videoClip.getReleaseDate();
         this.playlists = playlists;
+        this.active = videoClip.getActive();
     }
 
     public Long getId() {
@@ -129,6 +132,14 @@ public class VideoClipResponseDTO {
         this.playlists = playlists;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "VideoClipResponseDTO{" +
@@ -142,6 +153,7 @@ public class VideoClipResponseDTO {
                 ", creatorUsernames=" + creatorUsernames +
                 ", genreNames=" + genreNames +
                 ", playlists=" + playlists +
+                ", active=" + active +
                 '}';
     }
 }
