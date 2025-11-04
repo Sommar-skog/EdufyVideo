@@ -26,15 +26,4 @@ public class AminController {
         this.playlistService = playlistService;
     }
 
-    //ED-78-AA
-    @GetMapping("/videoclip/{id}")
-    public ResponseEntity<VideoClipResponseDTO> getVideoClipById (@PathVariable Long id) {
-        return ResponseEntity.ok(videoService.getVideoClipById(id));
-    }
-
-    //ED-79-AA
-    @GetMapping("/videoplaylist/{id}")
-    public ResponseEntity<VideoPlaylistResponseDTO> getVideoPlaylistById (@PathVariable Long id) {
-        return ResponseEntity.ok(playlistService.getVideoPlaylistById(id));
-    }
 }
