@@ -1,5 +1,7 @@
 package com.example.EdufyVideo.configs;
 
+import com.example.EdufyVideo.converters.JwtAuthConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -7,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -14,7 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    //add converter
+    //ED-167-AA
+    private JwtAuthConverter jwtAuthConverter;
+
+    //ED-167-AA
+    @Autowired
+    public void setJwtAuthConverter(JwtAuthConverter jwtAuthConverter) {
+        this.jwtAuthConverter = jwtAuthConverter;
+    }
 
     //ED-41-AA
     @Bean
@@ -30,7 +40,7 @@ public class SecurityConfig {
                  )   .httpBasic(Customizer.withDefaults()); //TODO remove httpBasic when connected to Keycloak
                 /* .oauth2ResourceServer(oauth2 ->
                          oauth2
-                                 .jwt(jwt -> jwt.jwtAuthenticationConverter())
+                                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
                  );*/
         return http.build();
     }
