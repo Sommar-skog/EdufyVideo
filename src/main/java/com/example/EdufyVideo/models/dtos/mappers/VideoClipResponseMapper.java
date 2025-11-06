@@ -28,6 +28,7 @@ public class VideoClipResponseMapper {
         dto.setReleaseDate(videoClip.getReleaseDate());
         dto.setTimesPlayed(videoClip.getTimesPlayed());
         dto.setPlaylists(playlists);
+        dto.setActive(videoClip.getActive());
 
         return dto;
     }

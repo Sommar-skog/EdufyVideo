@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 //ED-78-AA
 @Service
@@ -41,5 +43,17 @@ public class VideoServiceImpl implements VideoService {
 
         //TODO implement API-response from Genre and Creator
         return VideoClipResponseMapper.toDto(video);
+    }
+
+    //ED-57-AA
+
+    @Override
+    public List<VideoClipResponseDTO> getVideoClipByTitle(String title) {
+        List<VideoClip> videoClips = videoRepository.findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title);
+
+        if(videoClips.isEmpty()){
+            throw new ResourceNotFoundException("VideoClip", "title containing", title);
+        }
+        return videoClips.stream().map(VideoClipResponseMapper::toDto).collect(Collectors.toList());
     }
 }
