@@ -13,5 +13,5 @@ public interface VideoService {
     VideoClipResponseDTO getVideoClipById(Long id, Collection<? extends GrantedAuthority> roles); //ED-252-AA roles
 
     //ED-57-AA
-    List<VideoClipResponseDTO> getVideoClipByTitle (String title);
+    List<VideoClipResponseDTO> getVideoClipsByTitle(String title);
 }
