@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 //Ed-79-AA
 @Service
@@ -41,5 +43,17 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         //TODO implement API-response from Creator
         return VideoPlaylistResponseMapper.toDto(playlist);
+    }
+
+    //ED-59-AA
+    @Override
+    public List<VideoPlaylistResponseDTO> getPlaylistsByTitle(String title) {
+        List<VideoPlaylist> playlists = playlistRepository.findVideoPlaylistByTitleContainingIgnoreCaseAndActiveTrue(title);
+
+        if (playlists.isEmpty()) {
+            throw new ResourceNotFoundException("VideoPlaylist", "title", title);
+        }
+
+        return playlists.stream().map(VideoPlaylistResponseMapper::toDto).collect(Collectors.toList());
     }
 }

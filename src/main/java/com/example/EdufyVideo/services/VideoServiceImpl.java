@@ -48,7 +48,7 @@ public class VideoServiceImpl implements VideoService {
     //ED-57-AA
 
     @Override
-    public List<VideoClipResponseDTO> getVideoClipByTitle(String title) {
+    public List<VideoClipResponseDTO> getVideoClipsByTitle(String title) {
         List<VideoClip> videoClips = videoRepository.findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title);
 
         if(videoClips.isEmpty()){
