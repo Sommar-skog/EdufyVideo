@@ -10,11 +10,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 //ED-252/AA
 @RestController
 @RequestMapping("/video/")
-@PreAuthorize("hasAnyAuthority('video_user', 'video_admin')")
+@PreAuthorize("hasAnyRole('video_user', 'video_admin')")
 public class CommonController {
 
     //ED-252-AA
@@ -26,6 +28,12 @@ public class CommonController {
     public CommonController(VideoService videoService, PlaylistService playlistService) {
         this.videoService = videoService;
         this.playlistService = playlistService;
+    }
+
+    //ED-84-AA
+    @GetMapping("/videoclips-all")
+    public ResponseEntity<List<VideoClipResponseDTO>> getAllVideoClips(Authentication authentication) {
+        return ResponseEntity.ok(videoService.getAllVideoClips(authentication));
     }
 
     //ED-78-AA
