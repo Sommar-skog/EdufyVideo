@@ -31,7 +31,7 @@ public class SecurityConfig {
                          auth
                                  .requestMatchers("/video/**").authenticated() //ED-252-AA
                                  .requestMatchers("/h2-console/**").permitAll()
-                                 .anyRequest().permitAll() //change later
+                                 .anyRequest().authenticated() //ED-225-AA
                  )  //ED-225-AA
                  .oauth2ResourceServer(oauth2 ->
                          oauth2
