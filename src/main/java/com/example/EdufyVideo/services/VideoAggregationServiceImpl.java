@@ -43,22 +43,25 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
     //ED-61-AA
     @Override
     public VideographyResponseDTO getVideographyByCreator(Long creatorId, Authentication authentication) {
-        CreatorDTO creatorDTO = creatorClient.getCreatorWithMediaLists(creatorId);
+        CreatorDTO creatorWithClips = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_CLIP);
+        CreatorDTO creatorWithPlaylists = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_PLAYLIST);
 
-        List<Long> clips = creatorDTO.getVideoClips();
-        List<Long> playlist = creatorDTO.getVideoPlaylists();
+        //CreatorDTO creatorDTO = creatorClient.getCreatorWithMediaLists(creatorId);
+
+        List<Long> clips = creatorWithClips.getVideoClips();
+        List<Long> playlist = creatorWithPlaylists.getVideoPlaylists();
 
         List<VideoClip> videos =new ArrayList<>();
         List<VideoPlaylist> playlists = new ArrayList<>();
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_user"))){
-            videos = getActiveMediaList(creatorDTO.getVideoClips(), videoRepository, VideoClip::isActive);
-            playlists = getActiveMediaList(creatorDTO.getVideoPlaylists(), playlistRepository, VideoPlaylist::isActive);
+            videos = getActiveMediaList(clips, videoRepository, VideoClip::isActive);
+            playlists = getActiveMediaList(playlist, playlistRepository, VideoPlaylist::isActive);
         }
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
-            videos = getAllMediaList(creatorDTO.getVideoClips(), videoRepository);
-            playlists = getAllMediaList(creatorDTO.getVideoPlaylists(), playlistRepository);
+            videos = getAllMediaList(clips, videoRepository);
+            playlists = getAllMediaList(playlist, playlistRepository);
         }
 
         List<VideoClipResponseDTO> clipDTOs = videos.stream()
