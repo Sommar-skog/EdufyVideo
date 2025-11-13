@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
@@ -104,16 +105,21 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
 
     //ED-61-AA
     private List<String> getCreatorsForMedia(MediaType type, Long mediaId) {
-        List<CreatorDTO> creators = creatorClient.getCreatorsByMediaTypeAndMediaId(type, mediaId);
+        try {
+            List<CreatorDTO> creators = creatorClient.getCreatorsByMediaTypeAndMediaId(type, mediaId);
 
-        if (creators == null || creators.isEmpty()) {
+            if (creators == null || creators.isEmpty()) {
+                return List.of("CREATOR UNKNOWN");
+            }
+
+            return creators.stream()
+                    .map(CreatorDTO::getUsername)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (RestClientException e) {
             return List.of("CREATOR UNKNOWN");
         }
-
-        return creators.stream()
-                .map(CreatorDTO::getUsername)
-                .filter(Objects::nonNull)
-                .toList();
     }
 
 }
