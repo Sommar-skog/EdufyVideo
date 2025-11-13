@@ -6,6 +6,7 @@ import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,19 @@ public class PlaylistServiceImpl implements PlaylistService {
             throw new ResourceNotFoundException("VideoPlaylist", "title", title);
         }
 
+        return playlists.stream().map(VideoPlaylistResponseMapper::toDto).collect(Collectors.toList());
+    }
+
+    //ED-85-AA
+    @Override
+    public List<VideoPlaylistResponseDTO> getAllPlaylists(Authentication authentication) {
+        List<VideoPlaylist> playlists;
+
+        if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))) {
+            playlists = playlistRepository.findAll();
+        } else {
+            playlists = playlistRepository.findAllByActiveTrue();
+        }
         return playlists.stream().map(VideoPlaylistResponseMapper::toDto).collect(Collectors.toList());
     }
 }

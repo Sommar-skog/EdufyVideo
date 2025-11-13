@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -13,4 +14,7 @@ public interface PlaylistService {
 
     //ED-59-AA
     List<VideoPlaylistResponseDTO> getPlaylistsByTitle (String title);
+
+    //ED-85-AA
+    List<VideoPlaylistResponseDTO> getAllPlaylists(Authentication auth);
 }
