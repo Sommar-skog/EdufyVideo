@@ -53,4 +53,10 @@ public class CommonController {
     public ResponseEntity<VideoPlaylistResponseDTO> getVideoPlaylistById (@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(playlistService.getVideoPlaylistById(id, auth.getAuthorities()));
     }
+
+    //ED-61-AA
+    @GetMapping("/videography-creator/{creatorId}")
+    public ResponseEntity<List<VideographyResponseDTO>> getVideographyByCreator (@PathVariable Long creatorId, Authentication auth) {
+        return null;
+    }
 }
