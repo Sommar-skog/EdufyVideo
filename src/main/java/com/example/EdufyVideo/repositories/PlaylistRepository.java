@@ -16,4 +16,7 @@ public interface PlaylistRepository extends JpaRepository<VideoPlaylist, Long> {
 
     List<VideoPlaylist> findVideoPlaylistByTitleContainingIgnoreCaseAndActiveTrue(String title);
 
+    //ED-85-AA
+    List<VideoPlaylist> findAllByActiveTrue();
+
 }

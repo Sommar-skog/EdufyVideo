@@ -36,6 +36,12 @@ public class CommonController {
         return ResponseEntity.ok(videoService.getAllVideoClips(authentication));
     }
 
+    //ED-85-AA
+    @GetMapping("/videoplaylists-all")
+    public ResponseEntity<List<VideoPlaylistResponseDTO>> getAllVideoPlaylists(Authentication authentication) {
+        return ResponseEntity.ok(playlistService.getAllPlaylists(authentication));
+    }
+
     //ED-78-AA
     @GetMapping("/videoclip/{id}")
     public ResponseEntity<VideoClipResponseDTO> getVideoClipById (@PathVariable Long id, Authentication auth) {
