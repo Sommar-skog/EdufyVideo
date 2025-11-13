@@ -4,6 +4,7 @@ import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideographyResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
+import com.example.EdufyVideo.services.VideoAggregationService;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,14 @@ public class CommonController {
     //ED-252-AA
     private final VideoService videoService;
     private final PlaylistService playlistService;
+    private final VideoAggregationService videoAggregationService;
 
     //ED-252-AA
     @Autowired
-    public CommonController(VideoService videoService, PlaylistService playlistService) {
+    public CommonController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
         this.videoService = videoService;
         this.playlistService = playlistService;
+        this.videoAggregationService = videoAggregationService;
     }
 
     //ED-84-AA
@@ -58,6 +61,6 @@ public class CommonController {
     //ED-61-AA
     @GetMapping("/videography-creator/{creatorId}")
     public ResponseEntity<VideographyResponseDTO> getVideographyByCreator (@PathVariable Long creatorId, Authentication auth) {
-        return null;
+        return ResponseEntity.ok(videoAggregationService.getVideographyByCreator(creatorId, auth));
     }
 }

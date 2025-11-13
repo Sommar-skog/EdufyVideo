@@ -33,15 +33,14 @@ public class VideoPlaylistResponseMapper {
         return dto;
     }
 
-    public static VideoPlaylistResponseDTO toDtoWithCreatorsFromService(VideoPlaylist videoPlaylist, List<CreatorDTO> creators){
-        List<String> creatorUsernames = creators.stream().map(CreatorDTO::getUsername).collect(Collectors.toList());
+    public static VideoPlaylistResponseDTO toDtoWithCreatorsFromService(VideoPlaylist videoPlaylist, List<String> creatorsUsernames){
 
         List<VideoClipInfoDTO> videoClipEntries = getVideoClipEntries(videoPlaylist);
 
         VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
         dto.setId(videoPlaylist.getId());
         dto.setTitle(videoPlaylist.getTitle());
-        dto.setCreatorUsernames(creatorUsernames);
+        dto.setCreatorUsernames(creatorsUsernames);
         dto.setDescription(videoPlaylist.getDescription());
         dto.setUrl(videoPlaylist.getUrl());
         dto.setCreationDate(videoPlaylist.getCreationDate());

@@ -34,7 +34,7 @@ public class VideoClipResponseMapper {
     }
 
     //ED-61-AA
-    public static VideoClipResponseDTO toDtoWithDataFromService(VideoClip videoClip, List<String> genreNames, List<String> creatorUsernames) {
+    public static VideoClipResponseDTO toDtoWithDataFromService(VideoClip videoClip /*List<String> genreNames*/, List<String> creatorUsernames) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
@@ -42,7 +42,7 @@ public class VideoClipResponseMapper {
         dto.setTitle(videoClip.getTitle());
         dto.setCreatorUsernames(creatorUsernames);
         dto.setDescription(videoClip.getDescription());
-        dto.setGenreNames(genreNames);
+        // dto.setGenreNames(genreNames); //TODO getGenres later
         dto.setUrl(videoClip.getUrl());
         dto.setLength(videoClip.getLength());
         dto.setReleaseDate(videoClip.getReleaseDate());

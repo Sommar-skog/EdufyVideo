@@ -2,9 +2,11 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 
 
 //ED-61-AA
@@ -24,15 +26,15 @@ public class CreatorClient {
                 .body(CreatorDTO.class);
     }
 
-    public CreatorDTO getCreatorsByMediaTypeAndMediaId(MediaType mediaType, long mediaId) {
+    public List<CreatorDTO> getCreatorsByMediaTypeAndMediaId(MediaType mediaType, long mediaId) {
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/creator/creators-media")
-                        .queryParam("mediaType", mediaType.name()) // ENUM → String
+                        .queryParam("mediaType", mediaType.name())
                         .queryParam("mediaId", mediaId)
                         .build())
                 .retrieve()
-                .body(CreatorDTO.class);
+                .body(new ParameterizedTypeReference<List<CreatorDTO>>() {});
     }
 
 }
