@@ -2,6 +2,7 @@ package com.example.EdufyVideo.controllers;
 
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.VideographyResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class CommonController {
 
     //ED-61-AA
     @GetMapping("/videography-creator/{creatorId}")
-    public ResponseEntity<List<VideographyResponseDTO>> getVideographyByCreator (@PathVariable Long creatorId, Authentication auth) {
+    public ResponseEntity<VideographyResponseDTO> getVideographyByCreator (@PathVariable Long creatorId, Authentication auth) {
         return null;
     }
 }
