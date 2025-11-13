@@ -15,4 +15,7 @@ public interface VideoRepository  extends JpaRepository<VideoClip, Long> {
 
     //ED-57-AA
     List<VideoClip> findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(String title);
+
+    //ED-84-AA
+    List<VideoClip> findAllByActiveTrue();
 }

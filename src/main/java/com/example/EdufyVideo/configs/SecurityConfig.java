@@ -29,9 +29,8 @@ public class SecurityConfig {
                  .headers(h -> h.frameOptions(f -> f.disable()))
                  .authorizeHttpRequests(auth ->
                          auth
-                                 .requestMatchers("/video/**").authenticated() //ED-252-AA
                                  .requestMatchers("/h2-console/**").permitAll()
-                                 .anyRequest().authenticated() //ED-225-AA
+                                 .anyRequest().authenticated()
                  )  //ED-225-AA
                  .oauth2ResourceServer(oauth2 ->
                          oauth2
