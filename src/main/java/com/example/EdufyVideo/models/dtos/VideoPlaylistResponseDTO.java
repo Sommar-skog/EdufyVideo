@@ -1,11 +1,13 @@
 package com.example.EdufyVideo.models.dtos;
 
 import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDate;
 import java.util.List;
 
 //ED-79-AA
+@JsonInclude(JsonInclude.Include.NON_NULL) //ED-264-AA
 public class VideoPlaylistResponseDTO {
 
     private Long id;
@@ -15,7 +17,7 @@ public class VideoPlaylistResponseDTO {
     private String url;
     private LocalDate creationDate;
     private List<VideoClipInfoDTO> videoClipEntries;
-    private boolean active;
+    private Boolean active;
 
     public VideoPlaylistResponseDTO() {
 
@@ -99,11 +101,11 @@ public class VideoPlaylistResponseDTO {
         this.videoClipEntries = videoClipEntries;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
