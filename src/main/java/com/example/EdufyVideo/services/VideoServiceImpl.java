@@ -6,6 +6,7 @@ import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -46,13 +47,25 @@ public class VideoServiceImpl implements VideoService {
     }
 
     //ED-57-AA
-
     @Override
     public List<VideoClipResponseDTO> getVideoClipsByTitle(String title) {
         List<VideoClip> videoClips = videoRepository.findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title);
 
         if(videoClips.isEmpty()){
             throw new ResourceNotFoundException("VideoClip", "title containing", title);
+        }
+        return videoClips.stream().map(VideoClipResponseMapper::toDto).collect(Collectors.toList());
+    }
+
+    //ED-84-AA
+    @Override
+    public List<VideoClipResponseDTO> getAllVideoClips(Authentication authentication) {
+        List<VideoClip> videoClips;
+
+        if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
+            videoClips = videoRepository.findAll();
+        } else{
+            videoClips = videoRepository.findAllByActiveTrue();
         }
         return videoClips.stream().map(VideoClipResponseMapper::toDto).collect(Collectors.toList());
     }
