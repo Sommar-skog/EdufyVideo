@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
@@ -23,12 +24,14 @@ public class PlaylistServiceImpl implements PlaylistService {
     //Ed-79-AA
     private final PlaylistRepository playlistRepository;
     private final CreatorClient creatorClient;
+    private final GenreClient genreClient;
 
     //ED-79-AA
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, CreatorClient creatorClient) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository, CreatorClient creatorClient, GenreClient genreClient) {
         this.playlistRepository = playlistRepository;
         this.creatorClient = creatorClient;
+        this.genreClient = genreClient;
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.models.dtos.mappers;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.models.dtos.PlaylistInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
@@ -14,7 +15,7 @@ public class VideoClipResponseMapper {
 
 
     //ED-61-AA //ED-277-AA
-    public static VideoClipResponseDTO toDTOAdmin(VideoClip videoClip, CreatorClient creatorClient) {
+    public static VideoClipResponseDTO toDTOAdmin(VideoClip videoClip, CreatorClient creatorClient, GenreClient genreClient) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
@@ -24,7 +25,9 @@ public class VideoClipResponseMapper {
                 creatorClient.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setDescription(videoClip.getDescription());
-        // dto.setGenreNames(genreNames); //TODO getGenres later
+        dto.setGenreNames(
+                genreClient.getGenreIdAndNameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+        );
         dto.setUrl(videoClip.getUrl());
         dto.setLength(videoClip.getLength());
         dto.setReleaseDate(videoClip.getReleaseDate());
@@ -36,7 +39,7 @@ public class VideoClipResponseMapper {
     }
 
     //ED-277-AA
-    public static VideoClipResponseDTO toDTOUser(VideoClip videoClip, CreatorClient creatorClient) {
+    public static VideoClipResponseDTO toDTOUser(VideoClip videoClip, CreatorClient creatorClient, GenreClient genreClient) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
@@ -45,7 +48,9 @@ public class VideoClipResponseMapper {
                 creatorClient.getCreatorUsernamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setDescription(videoClip.getDescription());
-        // dto.setGenreNames(genreNames); //TODO getGenres later
+        dto.setGenreNames(
+                genreClient.getGenreNamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+        );
         dto.setUrl(videoClip.getUrl());
         dto.setLength(videoClip.getLength());
         dto.setReleaseDate(videoClip.getReleaseDate());
@@ -53,19 +58,6 @@ public class VideoClipResponseMapper {
         dto.setPlaylists(playlists);
 
         return dto;
-    }
-
-    private static List<String> getGenreNames(VideoClip videoClip) {
-        List<String> genreNames = new ArrayList<>();
-
-        if (videoClip.getGenresIds() != null) {
-            for (Long genreId : videoClip.getGenresIds()) {
-                //TODO API-anrop eller inskickat från service
-                String genreName = "Genre id: " + genreId;  //TODO implement genre
-                genreNames.add(genreName != null ? genreName : "UNKNOWN");
-            }
-        }
-        return genreNames;
     }
 
     private static List<PlaylistInfoDTO> getPlaylistInfoDTOS(VideoClip videoClip) {
