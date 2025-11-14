@@ -2,7 +2,9 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
+import com.example.EdufyVideo.clients.UserClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
+import com.example.EdufyVideo.models.dtos.UserDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
@@ -13,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +27,15 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
     private final CreatorClient creatorClient;
     private final GenreClient genreClient;
+    private final UserClient userClient;
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
+        this.userClient = userClient;
     }
 
     //ED-78-AA
@@ -84,6 +89,15 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public List<VideoClipResponseDTO> getUserHistory(Authentication authentication) {
+        UserDTO user = userClient.getUserBySub(authentication.getName());
+        if (user == null) {
+            throw new ResourceNotFoundException("User", "sub",authentication.getName());
+        }
+
+
+
+
+
         return List.of();
     }
 }
