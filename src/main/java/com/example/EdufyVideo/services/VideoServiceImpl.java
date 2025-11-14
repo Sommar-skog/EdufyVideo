@@ -90,13 +90,8 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-282-AA
     @Override
-    public List<VideoClipResponseDTO> getUserHistory(Authentication authentication) {
-        UserDTO user = userClient.getUserBySub(authentication.getName());
-        if (user == null) {
-            throw new ResourceNotFoundException("User", "sub",authentication.getName());
-        }
-
-        List<Long> videoClipsUserHistory = videoRepository.findVideoIdsByUserIdInHistory(user.getId());
+    public List<VideoClipResponseDTO> getUserHistory(Long userId) {
+        List<Long> videoClipsUserHistory = videoRepository.findVideoIdsByUserIdInHistory(userId);
 
         if (videoClipsUserHistory.isEmpty()){
             return Collections.emptyList();
