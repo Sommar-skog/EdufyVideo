@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
@@ -33,12 +34,14 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
     private final VideoRepository videoRepository;
     private final PlaylistRepository playlistRepository;
     private final CreatorClient creatorClient;
+    private final GenreClient genreClient;
 
     @Autowired
-    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClient creatorClient) {
+    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClient creatorClient, GenreClient genreClient) {
         this.videoRepository = videoRepository;
         this.playlistRepository = playlistRepository;
         this.creatorClient = creatorClient;
+        this.genreClient = genreClient;
     }
 
     //ED-61-AA
