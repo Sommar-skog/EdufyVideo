@@ -21,7 +21,7 @@ public class CreatorClient {
         this.restClient = builder.baseUrl("http://EDUFYCREATOR").build();
     }
 
-    public CreatorDTO getCreatorWithMediaLists(Long creatorId) {
+    public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
                     .uri("/creator/creator/{id}", creatorId)

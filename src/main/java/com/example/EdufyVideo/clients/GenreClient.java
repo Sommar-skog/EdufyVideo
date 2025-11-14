@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.RestClientException;
+import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.GenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,6 +19,18 @@ public class GenreClient {
 
     public GenreClient(RestClient.Builder builder) {
         this.restClient = builder.baseUrl("http://EDUFYBENRE").build();
+    }
+
+    //ED-243-AA
+    public GenreDTO getGenreById(Long genreId) {
+        try {
+            return restClient.get()
+                    .uri("/{id}", genreId)
+                    .retrieve()
+                    .body(GenreDTO.class);
+        } catch (Exception e) {
+            throw new RestClientException("EdufyVideo", "EdufyGenre");
+        }
     }
 
     public List<GenreDTO> getGenresByMediaTypeAndMediaId (MediaType mediaType, Long mediaId) {

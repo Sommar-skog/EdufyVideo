@@ -4,9 +4,7 @@ import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.clients.UserClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
-import com.example.EdufyVideo.models.dtos.UserDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.repositories.VideoRepository;
@@ -15,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -98,5 +97,73 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return videoClipsUserHistory.stream().map(VideoClipResponseMapper::toDTOClientJustId).collect(Collectors.toList());
+    }
+
+    //ED-243-AA
+    @Override
+    public VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO) {
+        List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
+        List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
+
+
+
+        return null;
+    }
+
+    //TODO eget exception
+    private void validateVideoClipData(AddVideoClipDTO dto) {
+        if (dto.getTitle() == null || dto.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Title cannot be null or blank");
+        }
+        if (dto.getTitle().length() > 100) {
+            throw new IllegalArgumentException("Title cannot exceed 100 characters");
+        }
+        if (dto.getUrl() == null || dto.getUrl().isBlank()) {
+            throw new IllegalArgumentException("URL cannot be null or blank");
+        }
+        if (dto.getDescription() == null || dto.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Description cannot be null or blank");
+        }
+        if (dto.getLength() == null) {
+            throw new IllegalArgumentException("Length cannot be null");
+        }
+        if (dto.getGenreIds() == null || dto.getGenreIds().isEmpty()) {
+            throw new IllegalArgumentException("At least one genre must be provided");
+        }
+        if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
+            throw new IllegalArgumentException("At least one creator must be provided");
+        }
+
+        validateUniqueUrl(dto.getUrl());
+    }
+
+    private void validateUniqueUrl(String url) {
+        if (videoRepository.existsByUrl(url)) {
+            throw new IllegalArgumentException("Video URL must be unique: " + url);
+        }
+    }
+
+    private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
+        List<CreatorDTO> creators = new ArrayList<>();
+        creatorIds.forEach(id -> {
+            CreatorDTO creator = creatorClient.getCreatorById(id);
+            if (creator == null) {
+                throw new ResourceNotFoundException("Creator", "id", id);
+            }
+            creators.add(creator);
+        });
+        return creators;
+    }
+
+    private List<GenreDTO> validateGenres(List<Long> genreIds) {
+        List<GenreDTO> genres = new ArrayList<>();
+        genreIds.forEach(id -> {
+            GenreDTO genre = genreClient.getGenreById(id);
+            if (genre == null) {
+                throw new ResourceNotFoundException("Genre", "id", id);
+            }
+            genres.add(genre);
+        });
+        return genres;
     }
 }
