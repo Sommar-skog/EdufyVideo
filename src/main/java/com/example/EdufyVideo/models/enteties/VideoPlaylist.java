@@ -33,15 +33,6 @@ public class VideoPlaylist {
     @OrderBy("position ASC")
     private List<PlaylistEntry> entryList = new ArrayList<>();
 
-    //ED-124-AA
-    @ElementCollection
-    @CollectionTable(
-            name = "video_playlist_creators",
-            joinColumns = @JoinColumn(name = "video_playlist_id")
-    )
-    @Column(name = "creator_id", nullable = false)
-    private List<Long> creatorIds = new ArrayList<>();
-
     @Column(name = "video_playlist_active")
     private boolean active = true;
 
@@ -49,13 +40,12 @@ public class VideoPlaylist {
 
     }
 
-    public VideoPlaylist(String title, String url, String description, LocalDate creationDate, List<PlaylistEntry> entryList, List<Long> creatorIds, boolean active) {
+    public VideoPlaylist(String title, String url, String description, LocalDate creationDate, List<PlaylistEntry> entryList, boolean active) {
         this.title = title;
         this.url = url;
         this.description = description;
         this.creationDate = creationDate;
         this.entryList = entryList;
-        this.creatorIds = creatorIds;
         this.active = active;
     }
 
@@ -65,7 +55,6 @@ public class VideoPlaylist {
         this.description = videoPlaylist.description;
         this.creationDate = videoPlaylist.creationDate;
         this.entryList = videoPlaylist.entryList;
-        this.creatorIds = videoPlaylist.creatorIds;
         this.active = videoPlaylist.active;
     }
 
@@ -117,14 +106,6 @@ public class VideoPlaylist {
         this.entryList = entryList;
     }
 
-    public List<Long> getCreatorIds() {
-        return creatorIds;
-    }
-
-    public void setCreatorIds(List<Long> creatorIds) {
-        this.creatorIds = creatorIds;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -142,7 +123,6 @@ public class VideoPlaylist {
                 ", description='" + description + '\'' +
                 ", creationDate=" + creationDate +
                 ", entryList=" + entryList +
-                ", creatorIds=" + creatorIds +
                 ", active=" + active +
                 '}';
     }
