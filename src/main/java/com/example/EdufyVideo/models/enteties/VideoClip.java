@@ -44,15 +44,6 @@ public class VideoClip {
     @Column(name = "creator_id", nullable = false)
     private List<Long> creatorIds = new ArrayList<>();
 
-    //ED-125-AA
-    @ElementCollection
-    @CollectionTable(
-            name = "video_clip_genres",
-            joinColumns = @JoinColumn(name = "video_clip_id")
-    )
-    @Column(name = "genre_id", nullable = false)
-    private List<Long> genresIds = new ArrayList<>();
-
     @OneToMany(mappedBy = "videoClip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistEntry> playlistEntries = new ArrayList<>();
 
@@ -61,7 +52,7 @@ public class VideoClip {
 
     public VideoClip() {}
 
-    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> creatorIds, List<Long> genresIds, List<PlaylistEntry> entries, Boolean active) {
+    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> creatorIds, List<PlaylistEntry> entries, Boolean active) {
         this.id = id;
         this.title = title;
         this.url = url;
@@ -70,7 +61,6 @@ public class VideoClip {
         this.releaseDate = releaseDate;
         this.timesPlayed = timesPlayed;
         this.creatorIds = creatorIds;
-        this.genresIds = genresIds;
         this.playlistEntries = entries;
         this.active = active;
     }
@@ -84,7 +74,6 @@ public class VideoClip {
         this.releaseDate = videoClip.releaseDate;
         this.timesPlayed = videoClip.timesPlayed;
         this.creatorIds = videoClip.creatorIds;
-        this.genresIds = videoClip.genresIds;
         this.playlistEntries = videoClip.playlistEntries;
         this.active = videoClip.active;
     }
@@ -153,14 +142,6 @@ public class VideoClip {
         this.creatorIds = creatorIds;
     }
 
-    public List<Long> getGenresIds() {
-        return genresIds;
-    }
-
-    public void setGenresIds(List<Long> genresIds) {
-        this.genresIds = genresIds;
-    }
-
     public List<PlaylistEntry> getPlaylistEntries() {
         return playlistEntries;
     }
@@ -188,7 +169,6 @@ public class VideoClip {
                 ", releaseDate=" + releaseDate +
                 ", timesPlayed=" + timesPlayed +
                 ", creatorIds=" + creatorIds +
-                ", genresIds=" + genresIds +
                 ", playlistEntries=" + playlistEntries +
                 ", active=" + active +
                 '}';
