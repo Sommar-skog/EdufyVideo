@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/video")
-@PreAuthorize("hasRole('video_admin')")
+@PreAuthorize("hasAnyRole('video_admin', 'edufy_realm_admin')")
 public class AminController {
 
     //ED-78-AA

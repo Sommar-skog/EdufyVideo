@@ -18,7 +18,7 @@ import java.util.List;
 //ED-252/AA
 @RestController
 @RequestMapping("/video/")
-@PreAuthorize("hasAnyRole('video_user', 'video_admin')")
+@PreAuthorize("hasAnyRole('video_user', 'video_admin','edufy_realm_admin')")
 public class CommonController {
 
     //ED-252-AA

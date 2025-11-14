@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
@@ -22,12 +23,14 @@ public class VideoServiceImpl implements VideoService {
     //ED-78-AA
     private final VideoRepository videoRepository;
     private final CreatorClient creatorClient;
+    private final GenreClient genreClient;
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
+        this.genreClient = genreClient;
     }
 
     //ED-78-AA
@@ -39,11 +42,11 @@ public class VideoServiceImpl implements VideoService {
         if(roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             video = videoRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient);
+            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient, genreClient);
         } else{
             video = videoRepository.findVideoClipByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOUser(video, creatorClient);
+            return VideoClipResponseMapper.toDTOUser(video, creatorClient, genreClient);
         }
     }
 
@@ -57,7 +60,7 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return videoClips.stream()
-                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
                 .collect(Collectors.toList());
     }
 
@@ -69,12 +72,12 @@ public class VideoServiceImpl implements VideoService {
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             videoClips = videoRepository.findAll();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
                     .collect(Collectors.toList());
         } else{
             videoClips = videoRepository.findAllByActiveTrue();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
                     .collect(Collectors.toList());
         }
     }

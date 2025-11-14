@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
@@ -33,12 +34,14 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
     private final VideoRepository videoRepository;
     private final PlaylistRepository playlistRepository;
     private final CreatorClient creatorClient;
+    private final GenreClient genreClient;
 
     @Autowired
-    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClient creatorClient) {
+    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClient creatorClient, GenreClient genreClient) {
         this.videoRepository = videoRepository;
         this.playlistRepository = playlistRepository;
         this.creatorClient = creatorClient;
+        this.genreClient = genreClient;
     }
 
     //ED-61-AA
@@ -46,8 +49,6 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
     public VideographyResponseDTO getVideographyByCreator(Long creatorId, Authentication authentication) {
         CreatorDTO creatorWithClips = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_CLIP);
         CreatorDTO creatorWithPlaylists = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_PLAYLIST);
-
-        //CreatorDTO creatorDTO = creatorClient.getCreatorWithMediaLists(creatorId);
 
         List<Long> clips = creatorWithClips.getVideoClips();
         List<Long> playlist = creatorWithPlaylists.getVideoPlaylists();
@@ -63,7 +64,7 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             videos = getActiveMediaList(clips, videoRepository, VideoClip::isActive);
             playlists = getActiveMediaList(playlist, playlistRepository, VideoPlaylist::isActive);
             clipDTOs = videos.stream()
-                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient))
+                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient, genreClient))
                     .toList();
 
             playlistDTOs = playlists.stream()
@@ -76,7 +77,7 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             playlists = getAllMediaList(playlist, playlistRepository);
 
            clipDTOs = videos.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
                     .toList();
 
            playlistDTOs = playlists.stream()
