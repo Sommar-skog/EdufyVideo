@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.Objects;
 
 
 //ED-61-AA
@@ -57,6 +58,44 @@ public class CreatorClient {
                     });
         } catch (Exception e) {
             throw new RestClientException("EdufyVideo", "EdufyCreator");
+        }
+    }
+
+    //ED-277-AA – Helper to return usernames directly
+    public List<String> getCreatorUsernamesByMedia(MediaType mediaType, long mediaId) {
+        try {
+            List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
+
+            if (creators == null || creators.isEmpty()) {
+                return List.of("CREATOR UNKNOWN");
+            }
+
+            return creators.stream()
+                    .map(CreatorDTO::getUsername)
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (RestClientException e) {
+            return List.of("CREATOR UNKNOWN");
+        }
+    }
+
+    //ED-277-AA – Helper to return combined "id - username" strings
+    public List<String> getCreatorIdAndUsernameByMedia(MediaType mediaType, long mediaId) {
+        try {
+            List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
+
+            if (creators == null || creators.isEmpty()) {
+                return List.of("CREATOR UNKNOWN");
+            }
+
+            return creators.stream()
+                    .map(c -> c.getId() + " - " + c.getUsername())
+                    .filter(Objects::nonNull)
+                    .toList();
+
+        } catch (RestClientException e) {
+            return List.of("CREATOR UNKNOWN");
         }
     }
 
