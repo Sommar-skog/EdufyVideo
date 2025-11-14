@@ -28,7 +28,27 @@ public class VideoClipResponseMapper {
         dto.setReleaseDate(videoClip.getReleaseDate());
         dto.setTimesPlayed(videoClip.getTimesPlayed());
         dto.setPlaylists(playlists);
-        dto.setActive(videoClip.getActive());
+        dto.setActive(videoClip.isActive());
+
+        return dto;
+    }
+
+    //ED-61-AA
+    public static VideoClipResponseDTO toDtoWithDataFromService(VideoClip videoClip /*List<String> genreNames*/, List<String> creatorUsernames) {
+        List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
+
+        VideoClipResponseDTO dto = new VideoClipResponseDTO();
+        dto.setId(videoClip.getId());
+        dto.setTitle(videoClip.getTitle());
+        dto.setCreatorUsernames(creatorUsernames);
+        dto.setDescription(videoClip.getDescription());
+        // dto.setGenreNames(genreNames); //TODO getGenres later
+        dto.setUrl(videoClip.getUrl());
+        dto.setLength(videoClip.getLength());
+        dto.setReleaseDate(videoClip.getReleaseDate());
+        dto.setTimesPlayed(videoClip.getTimesPlayed());
+        dto.setPlaylists(playlists);
+        dto.setActive(videoClip.isActive());
 
         return dto;
     }

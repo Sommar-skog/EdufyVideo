@@ -51,7 +51,7 @@ public class VideoClipResponseDTO {
         this.length = videoClip.getLength();
         this.releaseDate = videoClip.getReleaseDate();
         this.playlists = playlists;
-        this.active = videoClip.getActive();
+        this.active = videoClip.isActive();
     }
 
     public Long getId() {

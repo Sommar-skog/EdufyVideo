@@ -169,7 +169,7 @@ public class VideoClip {
         this.playlistEntries = playlistEntries;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 

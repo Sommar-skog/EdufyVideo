@@ -1,5 +1,6 @@
 package com.example.EdufyVideo.models.dtos.mappers;
 
+import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
@@ -8,18 +9,38 @@ import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //ED-79-AA
 public class VideoPlaylistResponseMapper {
 
     public static VideoPlaylistResponseDTO toDto(VideoPlaylist videoPlaylist){
         List<String> creatorUsernames = getCreators(videoPlaylist);
+
         List<VideoClipInfoDTO> videoClipEntries = getVideoClipEntries(videoPlaylist);
 
         VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
         dto.setId(videoPlaylist.getId());
         dto.setTitle(videoPlaylist.getTitle());
         dto.setCreatorUsernames(creatorUsernames);
+        dto.setDescription(videoPlaylist.getDescription());
+        dto.setUrl(videoPlaylist.getUrl());
+        dto.setCreationDate(videoPlaylist.getCreationDate());
+        dto.setVideoClipEntries(videoClipEntries);
+        dto.setActive(videoPlaylist.isActive());
+        dto.setActive(videoPlaylist.isActive());
+
+        return dto;
+    }
+
+    public static VideoPlaylistResponseDTO toDtoWithCreatorsFromService(VideoPlaylist videoPlaylist, List<String> creatorsUsernames){
+
+        List<VideoClipInfoDTO> videoClipEntries = getVideoClipEntries(videoPlaylist);
+
+        VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
+        dto.setId(videoPlaylist.getId());
+        dto.setTitle(videoPlaylist.getTitle());
+        dto.setCreatorUsernames(creatorsUsernames);
         dto.setDescription(videoPlaylist.getDescription());
         dto.setUrl(videoPlaylist.getUrl());
         dto.setCreationDate(videoPlaylist.getCreationDate());
