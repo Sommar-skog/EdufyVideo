@@ -3,7 +3,9 @@ package com.example.EdufyVideo.services;
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.clients.UserClient;
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
+import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
@@ -113,25 +115,25 @@ public class VideoServiceImpl implements VideoService {
     //TODO eget exception
     private void validateVideoClipData(AddVideoClipDTO dto) {
         if (dto.getTitle() == null || dto.getTitle().isBlank()) {
-            throw new IllegalArgumentException("Title cannot be null or blank");
+            throw new InvalidInputException("Title cannot be null or blank");
         }
         if (dto.getTitle().length() > 100) {
-            throw new IllegalArgumentException("Title cannot exceed 100 characters");
+            throw new InvalidInputException("Title cannot exceed 100 characters");
         }
         if (dto.getUrl() == null || dto.getUrl().isBlank()) {
-            throw new IllegalArgumentException("URL cannot be null or blank");
+            throw new InvalidInputException("Url cannot be null or blank");
         }
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
-            throw new IllegalArgumentException("Description cannot be null or blank");
+            throw new InvalidInputException("Description cannot be null or blank");
         }
         if (dto.getLength() == null) {
-            throw new IllegalArgumentException("Length cannot be null");
+            throw new InvalidInputException("Length cannot be null or blank");
         }
         if (dto.getGenreIds() == null || dto.getGenreIds().isEmpty()) {
-            throw new IllegalArgumentException("At least one genre must be provided");
+            throw new InvalidInputException("At least one genre must be provided");
         }
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
-            throw new IllegalArgumentException("At least one creator must be provided");
+            throw new InvalidInputException("At least one creator must be provided");
         }
 
         validateUniqueUrl(dto.getUrl());
@@ -139,7 +141,7 @@ public class VideoServiceImpl implements VideoService {
 
     private void validateUniqueUrl(String url) {
         if (videoRepository.existsByUrl(url)) {
-            throw new IllegalArgumentException("Video URL must be unique: " + url);
+            throw new UniqueConflictException("url", url);
         }
     }
 
