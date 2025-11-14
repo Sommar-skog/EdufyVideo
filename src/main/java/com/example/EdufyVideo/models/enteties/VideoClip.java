@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //ED-122-AA
 @Entity
@@ -32,9 +34,15 @@ public class VideoClip {
     @Column(name = "video_clip_release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "video_clip_times_played")
-    private Long timesPlayed;
+/*    @Column(name = "video_clip_times_played")
+    private Long timesPlayed;*/
 
+    //ED-282-AA
+    @ElementCollection
+    @CollectionTable(name = "video_clip_user_history", joinColumns = @JoinColumn(name = "video_clip_id"))
+    @MapKeyColumn(name = "user_id")
+    @Column(name = "times_played")
+    private Map<Long, Long> userHistory = new HashMap<>();
 
     @OneToMany(mappedBy = "videoClip", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaylistEntry> playlistEntries = new ArrayList<>();
@@ -44,14 +52,14 @@ public class VideoClip {
 
     public VideoClip() {}
 
-    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<PlaylistEntry> entries, Boolean active) {
+    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate,Map<Long,Long> userHistory, List<PlaylistEntry> entries, Boolean active) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.description = description;
         this.length = length;
         this.releaseDate = releaseDate;
-        this.timesPlayed = timesPlayed;
+        this.userHistory = userHistory;
         this.playlistEntries = entries;
         this.active = active;
     }
@@ -63,7 +71,6 @@ public class VideoClip {
         this.description = videoClip.description;
         this.length = videoClip.length;
         this.releaseDate = videoClip.releaseDate;
-        this.timesPlayed = videoClip.timesPlayed;
         this.playlistEntries = videoClip.playlistEntries;
         this.active = videoClip.active;
     }
@@ -116,14 +123,19 @@ public class VideoClip {
         this.releaseDate = releaseDate;
     }
 
+    //ED-282-AA
+    // Tracks total play count per user for this video (userId → timesPlayed)
     public Long getTimesPlayed() {
-        return timesPlayed;
+        return userHistory.values().stream().mapToLong(Long::longValue).sum();
     }
 
-    public void setTimesPlayed(Long timesPlayed) {
-        this.timesPlayed = timesPlayed;
+    public Map<Long, Long> getUserHistory() {
+        return userHistory;
     }
 
+    public void setUserHistory(Map<Long, Long> userHistory) {
+        this.userHistory = userHistory;
+    }
 
     public List<PlaylistEntry> getPlaylistEntries() {
         return playlistEntries;
@@ -150,7 +162,7 @@ public class VideoClip {
                 ", description='" + description + '\'' +
                 ", length=" + length +
                 ", releaseDate=" + releaseDate +
-                ", timesPlayed=" + timesPlayed +
+                ", timesPlayed=" + getTimesPlayed() +
                 ", playlistEntries=" + playlistEntries +
                 ", active=" + active +
                 '}';
