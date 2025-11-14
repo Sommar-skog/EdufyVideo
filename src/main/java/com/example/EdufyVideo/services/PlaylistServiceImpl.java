@@ -70,12 +70,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))) {
             playlists = playlistRepository.findAll();
-            playlists.stream()
+            return playlists.stream()
                     .map(v -> VideoPlaylistResponseMapper.toDtoAdmin(v, creatorClient))
                     .collect(Collectors.toList());
         } else {
             playlists = playlistRepository.findAllByActiveTrue();
-            playlists.stream()
+            return playlists.stream()
                     .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
                     .collect(Collectors.toList());
         }

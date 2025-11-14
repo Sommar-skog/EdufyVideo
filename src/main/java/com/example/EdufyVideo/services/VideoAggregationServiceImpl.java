@@ -52,33 +52,37 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
         List<Long> clips = creatorWithClips.getVideoClips();
         List<Long> playlist = creatorWithPlaylists.getVideoPlaylists();
 
-        List<VideoClip> videos =new ArrayList<>();
-        List<VideoPlaylist> playlists = new ArrayList<>();
+        List<VideoClip> videos;
+        List<VideoPlaylist> playlists;
+
+        List<VideoPlaylistResponseDTO> playlistDTOs = new ArrayList<>();
+        List<VideoClipResponseDTO> clipDTOs = new ArrayList<>();
+
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_user"))){
             videos = getActiveMediaList(clips, videoRepository, VideoClip::isActive);
             playlists = getActiveMediaList(playlist, playlistRepository, VideoPlaylist::isActive);
+            clipDTOs = videos.stream()
+                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient))
+                    .toList();
+
+            playlistDTOs = playlists.stream()
+                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoUser(pl, creatorClient))
+                    .toList();
         }
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             videos = getAllMediaList(clips, videoRepository);
             playlists = getAllMediaList(playlist, playlistRepository);
+
+           clipDTOs = videos.stream()
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .toList();
+
+           playlistDTOs = playlists.stream()
+                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoAdmin(pl, creatorClient))
+                    .toList();
         }
-
-        List<VideoClipResponseDTO> clipDTOs = videos.stream()
-                .map(clip -> {
-                    List<String> creators = getCreatorsForMedia(MediaType.VIDEO_CLIP, clip.getId());
-                    return VideoClipResponseMapper.toDtoWithDataFromService(clip, creators);
-                })
-                .toList();
-
-        List<VideoPlaylistResponseDTO> playlistDTOs = playlists.stream()
-                .map(pl -> {
-                    List<String> creators = getCreatorsForMedia(MediaType.VIDEO_PLAYLIST, pl.getId());
-                    return VideoPlaylistResponseMapper.toDtoWithCreatorsFromService(pl, creators);
-                })
-                .toList();
-
         return new VideographyResponseDTO(clipDTOs, playlistDTOs);
     }
 
@@ -101,25 +105,6 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-    }
-
-    //ED-61-AA
-    private List<String> getCreatorsForMedia(MediaType type, Long mediaId) {
-        try {
-            List<CreatorDTO> creators = creatorClient.getCreatorsByMediaTypeAndMediaId(type, mediaId);
-
-            if (creators == null || creators.isEmpty()) {
-                return List.of("CREATOR UNKNOWN");
-            }
-
-            return creators.stream()
-                    .map(CreatorDTO::getUsername)
-                    .filter(Objects::nonNull)
-                    .toList();
-
-        } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN");
-        }
     }
 
 }
