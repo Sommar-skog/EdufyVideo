@@ -24,6 +24,10 @@ public class InvalidInputException extends RuntimeException {
         this.message = message;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     public String getObject() {
         return object;
     }

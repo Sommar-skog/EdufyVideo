@@ -102,17 +102,21 @@ public class VideoServiceImpl implements VideoService {
     }
 
     //ED-243-AA
+    //TODO Add thumb for VideoClip, add videoclip to Cretors id-list, add videoClip to genres id-list
+    //TODO Save to repository, return to Postman
     @Override
     public VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO) {
         List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
         List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
+        validateVideoClipData(addVideoClipDTO);
+
 
 
 
         return null;
     }
 
-    //TODO eget exception
+    //ED-243-AA
     private void validateVideoClipData(AddVideoClipDTO dto) {
         if (dto.getTitle() == null || dto.getTitle().isBlank()) {
             throw new InvalidInputException("Title cannot be null or blank");
@@ -139,12 +143,14 @@ public class VideoServiceImpl implements VideoService {
         validateUniqueUrl(dto.getUrl());
     }
 
+    //ED-243-AA
     private void validateUniqueUrl(String url) {
         if (videoRepository.existsByUrl(url)) {
             throw new UniqueConflictException("url", url);
         }
     }
 
+    //ED-243-AA
     private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
         List<CreatorDTO> creators = new ArrayList<>();
         creatorIds.forEach(id -> {
@@ -157,6 +163,7 @@ public class VideoServiceImpl implements VideoService {
         return creators;
     }
 
+    //ED-243-AA
     private List<GenreDTO> validateGenres(List<Long> genreIds) {
         List<GenreDTO> genres = new ArrayList<>();
         genreIds.forEach(id -> {
