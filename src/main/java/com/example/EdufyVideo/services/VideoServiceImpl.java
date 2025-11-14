@@ -94,6 +94,7 @@ public class VideoServiceImpl implements VideoService {
             throw new ResourceNotFoundException("User", "sub",authentication.getName());
         }
 
+        List<Long> videoClipsUserHistory = videoRepository.findVideoIdsByUserIdInHistory(user.getId());
 
 
 
