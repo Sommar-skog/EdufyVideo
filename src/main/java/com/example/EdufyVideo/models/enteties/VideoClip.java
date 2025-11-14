@@ -35,15 +35,6 @@ public class VideoClip {
     @Column(name = "video_clip_times_played")
     private Long timesPlayed;
 
-    //ED-124-AA
-    @ElementCollection
-    @CollectionTable(
-            name = "video_clip_creators",
-            joinColumns = @JoinColumn(name = "video_clip_id")
-    )
-    @Column(name = "creator_id", nullable = false)
-    private List<Long> creatorIds = new ArrayList<>();
-
     //ED-125-AA
     @ElementCollection
     @CollectionTable(
@@ -61,7 +52,7 @@ public class VideoClip {
 
     public VideoClip() {}
 
-    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> creatorIds, List<Long> genresIds, List<PlaylistEntry> entries, Boolean active) {
+    public VideoClip(Long id, String title, String url, String description, LocalTime length, LocalDate releaseDate, Long timesPlayed, List<Long> genresIds, List<PlaylistEntry> entries, Boolean active) {
         this.id = id;
         this.title = title;
         this.url = url;
@@ -69,7 +60,6 @@ public class VideoClip {
         this.length = length;
         this.releaseDate = releaseDate;
         this.timesPlayed = timesPlayed;
-        this.creatorIds = creatorIds;
         this.genresIds = genresIds;
         this.playlistEntries = entries;
         this.active = active;
@@ -83,7 +73,6 @@ public class VideoClip {
         this.length = videoClip.length;
         this.releaseDate = videoClip.releaseDate;
         this.timesPlayed = videoClip.timesPlayed;
-        this.creatorIds = videoClip.creatorIds;
         this.genresIds = videoClip.genresIds;
         this.playlistEntries = videoClip.playlistEntries;
         this.active = videoClip.active;
@@ -145,14 +134,6 @@ public class VideoClip {
         this.timesPlayed = timesPlayed;
     }
 
-    public List<Long> getCreatorIds() {
-        return creatorIds;
-    }
-
-    public void setCreatorIds(List<Long> creatorIds) {
-        this.creatorIds = creatorIds;
-    }
-
     public List<Long> getGenresIds() {
         return genresIds;
     }
@@ -187,7 +168,6 @@ public class VideoClip {
                 ", length=" + length +
                 ", releaseDate=" + releaseDate +
                 ", timesPlayed=" + timesPlayed +
-                ", creatorIds=" + creatorIds +
                 ", genresIds=" + genresIds +
                 ", playlistEntries=" + playlistEntries +
                 ", active=" + active +
