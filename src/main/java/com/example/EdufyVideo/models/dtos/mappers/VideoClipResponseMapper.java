@@ -1,15 +1,69 @@
 package com.example.EdufyVideo.models.dtos.mappers;
 
+import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.PlaylistInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.enums.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VideoClipResponseMapper {
 
+
+    //ED-61-AA
+    public static VideoClipResponseDTO toDTOAdmin(VideoClip videoClip, CreatorClient creatorClient) {
+        List<String> creators = creatorClient
+                .getCreatorsByMediaTypeAndMediaId(MediaType.VIDEO_CLIP, videoClip.getId())
+                .stream()
+                .map(c -> c.getId() + " - " + c.getUsername())
+                .collect(Collectors.toList());
+
+        List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
+
+        VideoClipResponseDTO dto = new VideoClipResponseDTO();
+        dto.setId(videoClip.getId());
+        dto.setTitle(videoClip.getTitle());
+        dto.setCreatorUsernames(creators);
+        dto.setDescription(videoClip.getDescription());
+        // dto.setGenreNames(genreNames); //TODO getGenres later
+        dto.setUrl(videoClip.getUrl());
+        dto.setLength(videoClip.getLength());
+        dto.setReleaseDate(videoClip.getReleaseDate());
+        dto.setTimesPlayed(videoClip.getTimesPlayed());
+        dto.setPlaylists(playlists);
+        dto.setActive(videoClip.isActive());
+
+        return dto;
+    }
+
+    public static VideoClipResponseDTO toDTOUser(VideoClip videoClip, CreatorClient creatorClient) {
+        List<String> usernames = creatorClient
+                .getCreatorsByMediaTypeAndMediaId(MediaType.VIDEO_CLIP, videoClip.getId())
+                .stream()
+                .map(CreatorDTO::getUsername)
+                .collect(Collectors.toList());
+        List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
+
+        VideoClipResponseDTO dto = new VideoClipResponseDTO();
+        dto.setTitle(videoClip.getTitle());
+        dto.setCreatorUsernames(usernames);
+        dto.setDescription(videoClip.getDescription());
+        // dto.setGenreNames(genreNames); //TODO getGenres later
+        dto.setUrl(videoClip.getUrl());
+        dto.setLength(videoClip.getLength());
+        dto.setReleaseDate(videoClip.getReleaseDate());
+        dto.setTimesPlayed(videoClip.getTimesPlayed());
+        dto.setPlaylists(playlists);
+
+        return dto;
+    }
+
+/*
     //ED-78-AA
     //TODO lägg till inparametrar för API-anrop
     public static VideoClipResponseDTO toDto(VideoClip videoClip) {
@@ -34,7 +88,9 @@ public class VideoClipResponseMapper {
     }
 
     //ED-61-AA
-    public static VideoClipResponseDTO toDtoWithDataFromService(VideoClip videoClip /*List<String> genreNames*/, List<String> creatorUsernames) {
+    public static VideoClipResponseDTO toDtoWithDataFromService(VideoClip videoClip */
+/*List<String> genreNames*//*
+, List<String> creatorUsernames) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
@@ -52,8 +108,9 @@ public class VideoClipResponseMapper {
 
         return dto;
     }
+*/
 
-    private static List<String> getCreators(VideoClip videoClip) {
+/*    private static List<String> getCreators(VideoClip videoClip) {
         List<String> creatorUsernames = new ArrayList<>();
 
         if (videoClip.getCreatorIds() != null) {
@@ -64,7 +121,7 @@ public class VideoClipResponseMapper {
             }
         }
         return creatorUsernames;
-    }
+    }*/
 
     private static List<String> getGenreNames(VideoClip videoClip) {
         List<String> genreNames = new ArrayList<>();
