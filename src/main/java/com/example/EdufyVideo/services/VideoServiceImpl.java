@@ -78,4 +78,9 @@ public class VideoServiceImpl implements VideoService {
                     .collect(Collectors.toList());
         }
     }
+
+    @Override
+    public List<VideoClipResponseDTO> getUserHistory(Authentication authentication) {
+        return List.of();
+    }
 }

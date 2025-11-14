@@ -18,4 +18,6 @@ public interface VideoService {
 
     //ED-84-AA
     List<VideoClipResponseDTO> getAllVideoClips(Authentication authentication);
+
+    List<VideoClipResponseDTO> getUserHistory(Authentication authentication);
 }

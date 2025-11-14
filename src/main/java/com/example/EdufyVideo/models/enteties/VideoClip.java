@@ -34,9 +34,6 @@ public class VideoClip {
     @Column(name = "video_clip_release_date", nullable = false)
     private LocalDate releaseDate;
 
-/*    @Column(name = "video_clip_times_played")
-    private Long timesPlayed;*/
-
     //ED-282-AA
     @ElementCollection
     @CollectionTable(name = "video_clip_user_history", joinColumns = @JoinColumn(name = "video_clip_id"))
