@@ -4,6 +4,7 @@ import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.models.dtos.PlaylistInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;
@@ -60,6 +61,13 @@ public class VideoClipResponseMapper {
         return dto;
     }
 
+    //ED-282-AA
+    public static VideoClipResponseDTO toDTOClientJustId(Long videoClipId) {
+        VideoClipResponseDTO dto = new VideoClipResponseDTO();
+        dto.setId(videoClipId);
+        return dto;
+    }
+
     private static List<PlaylistInfoDTO> getPlaylistInfoDTOS(VideoClip videoClip) {
         List<PlaylistInfoDTO> playlists = new ArrayList<>();
 
@@ -75,4 +83,6 @@ public class VideoClipResponseMapper {
         }
         return playlists;
     }
+
+
 }

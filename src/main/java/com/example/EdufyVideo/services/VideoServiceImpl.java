@@ -6,6 +6,7 @@ import com.example.EdufyVideo.clients.UserClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.UserDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.repositories.VideoRepository;
@@ -87,6 +88,7 @@ public class VideoServiceImpl implements VideoService {
         }
     }
 
+    //ED-282-AA
     @Override
     public List<VideoClipResponseDTO> getUserHistory(Authentication authentication) {
         UserDTO user = userClient.getUserBySub(authentication.getName());
@@ -96,9 +98,6 @@ public class VideoServiceImpl implements VideoService {
 
         List<Long> videoClipsUserHistory = videoRepository.findVideoIdsByUserIdInHistory(user.getId());
 
-
-
-
-        return List.of();
+        return videoClipsUserHistory.stream().map(VideoClipResponseMapper::toDTOClientJustId).collect(Collectors.toList());
     }
 }
