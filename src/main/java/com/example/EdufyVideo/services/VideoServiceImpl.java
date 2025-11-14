@@ -98,6 +98,10 @@ public class VideoServiceImpl implements VideoService {
 
         List<Long> videoClipsUserHistory = videoRepository.findVideoIdsByUserIdInHistory(user.getId());
 
+        if (videoClipsUserHistory.isEmpty()){
+            return Collections.emptyList();
+        }
+
         return videoClipsUserHistory.stream().map(VideoClipResponseMapper::toDTOClientJustId).collect(Collectors.toList());
     }
 }
