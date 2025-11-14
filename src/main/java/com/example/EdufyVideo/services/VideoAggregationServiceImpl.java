@@ -50,8 +50,6 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
         CreatorDTO creatorWithClips = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_CLIP);
         CreatorDTO creatorWithPlaylists = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_PLAYLIST);
 
-        //CreatorDTO creatorDTO = creatorClient.getCreatorWithMediaLists(creatorId);
-
         List<Long> clips = creatorWithClips.getVideoClips();
         List<Long> playlist = creatorWithPlaylists.getVideoPlaylists();
 
@@ -66,7 +64,7 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             videos = getActiveMediaList(clips, videoRepository, VideoClip::isActive);
             playlists = getActiveMediaList(playlist, playlistRepository, VideoPlaylist::isActive);
             clipDTOs = videos.stream()
-                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient))
+                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient, genreClient))
                     .toList();
 
             playlistDTOs = playlists.stream()
@@ -79,7 +77,7 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             playlists = getAllMediaList(playlist, playlistRepository);
 
            clipDTOs = videos.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
                     .toList();
 
            playlistDTOs = playlists.stream()

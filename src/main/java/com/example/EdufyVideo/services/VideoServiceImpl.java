@@ -42,11 +42,11 @@ public class VideoServiceImpl implements VideoService {
         if(roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             video = videoRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient);
+            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient, genreClient);
         } else{
             video = videoRepository.findVideoClipByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOUser(video, creatorClient);
+            return VideoClipResponseMapper.toDTOUser(video, creatorClient, genreClient);
         }
     }
 
@@ -60,7 +60,7 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return videoClips.stream()
-                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
                 .collect(Collectors.toList());
     }
 
@@ -72,12 +72,12 @@ public class VideoServiceImpl implements VideoService {
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             videoClips = videoRepository.findAll();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
                     .collect(Collectors.toList());
         } else{
             videoClips = videoRepository.findAllByActiveTrue();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
                     .collect(Collectors.toList());
         }
     }
