@@ -1,5 +1,6 @@
 package com.example.EdufyVideo.services;
 
+import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
@@ -20,11 +21,13 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-78-AA
     private final VideoRepository videoRepository;
+    private final CreatorClient creatorClient;
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient) {
         this.videoRepository = videoRepository;
+        this.creatorClient = creatorClient;
     }
 
     //ED-78-AA
@@ -36,14 +39,12 @@ public class VideoServiceImpl implements VideoService {
         if(roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             video = videoRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
+            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient);
         } else{
             video = videoRepository.findVideoClipByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
+            return VideoClipResponseMapper.toDTOUser(video, creatorClient);
         }
-
-
-        //TODO implement API-response from Genre and Creator
-        return VideoClipResponseMapper.toDto(video);
     }
 
     //ED-57-AA
@@ -54,7 +55,10 @@ public class VideoServiceImpl implements VideoService {
         if(videoClips.isEmpty()){
             throw new ResourceNotFoundException("VideoClip", "title containing", title);
         }
-        return videoClips.stream().map(VideoClipResponseMapper::toDto).collect(Collectors.toList());
+
+        return videoClips.stream()
+                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                .collect(Collectors.toList());
     }
 
     //ED-84-AA
@@ -64,9 +68,14 @@ public class VideoServiceImpl implements VideoService {
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             videoClips = videoRepository.findAll();
+            return videoClips.stream()
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient))
+                    .collect(Collectors.toList());
         } else{
             videoClips = videoRepository.findAllByActiveTrue();
+            return videoClips.stream()
+                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient))
+                    .collect(Collectors.toList());
         }
-        return videoClips.stream().map(VideoClipResponseMapper::toDto).collect(Collectors.toList());
     }
 }
