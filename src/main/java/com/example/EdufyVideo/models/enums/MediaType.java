@@ -6,6 +6,6 @@ public enum MediaType {
     VIDEO_PLAYLIST,
     SONG,
     ALBUM,
-    POD_EPISODE,
-    POD_SEASON
+    PODCAST_EPISODE,
+    PODCAST_SEASON
 }
