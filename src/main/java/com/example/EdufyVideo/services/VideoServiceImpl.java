@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,14 +31,16 @@ public class VideoServiceImpl implements VideoService {
     private final CreatorClient creatorClient;
     private final GenreClient genreClient;
     private final UserClient userClient;
+    private final PlaylistService playlistService; //ED-243-AA
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistService playlistService) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
         this.userClient = userClient;
+        this.playlistService = playlistService;
     }
 
     //ED-78-AA
@@ -139,6 +142,9 @@ public class VideoServiceImpl implements VideoService {
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
             throw new InvalidInputException("At least one creator must be provided");
         }
+        if (dto.getPlaylistId() != null && dto.getPlaylistId() <= 0){
+            throw new InvalidInputException("Playlist id must be greater than zero");
+        }
 
         validateUniqueUrl(dto.getUrl());
     }
@@ -153,12 +159,14 @@ public class VideoServiceImpl implements VideoService {
     //ED-243-AA
     private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
         List<CreatorDTO> creators = new ArrayList<>();
+
         creatorIds.forEach(id -> {
-            CreatorDTO creator = creatorClient.getCreatorById(id);
-            if (creator == null) {
+            try {
+                CreatorDTO creator = creatorClient.getCreatorById(id);
+                creators.add(creator);
+            } catch (RestClientResponseException ex) {
                 throw new ResourceNotFoundException("Creator", "id", id);
             }
-            creators.add(creator);
         });
         return creators;
     }
@@ -167,11 +175,12 @@ public class VideoServiceImpl implements VideoService {
     private List<GenreDTO> validateGenres(List<Long> genreIds) {
         List<GenreDTO> genres = new ArrayList<>();
         genreIds.forEach(id -> {
-            GenreDTO genre = genreClient.getGenreById(id);
-            if (genre == null) {
+            try {
+                GenreDTO genre = genreClient.getGenreById(id);
+                genres.add(genre);
+            } catch (RestClientResponseException ex) {
                 throw new ResourceNotFoundException("Genre", "id", id);
             }
-            genres.add(genre);
         });
         return genres;
     }
