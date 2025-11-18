@@ -2,6 +2,7 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
+import com.example.EdufyVideo.models.dtos.MedaByGenreDTO;
 import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.dtos.GenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
@@ -52,7 +53,18 @@ public class GenreClient {
 
     //ED-270-AA
     public MedaByGenreDTO getVideoClipsByGenre (Long genreId, MediaType mediaType){
-
+            try {
+                return restClient.get()
+                        .uri("/{genreId}/media/by-type/{mediaType}", genreId, mediaType)
+                        .retrieve()
+                        .body(MedaByGenreDTO.class);
+            } catch (ResourceAccessException e) {
+                throw new RestClientException("EdufyVideo", "EdufyGenre");
+            } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Genre-service error: " + error);
+        }
     }
 
     //ED-244-AA
