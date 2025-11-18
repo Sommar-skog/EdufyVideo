@@ -2,8 +2,8 @@ package com.example.EdufyVideo.controllers;
 
 
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,11 @@ public class AminController {
     @PostMapping("/videoclip")
     public ResponseEntity<VideoClipResponseDTO> addVideoClip(@RequestBody AddVideoClipDTO dto) {
         return ResponseEntity.ok(videoService.addVideoClip(dto));
+    }
+
+    @PostMapping("/playlist")
+    public ResponseEntity<VideoPlaylistResponseDTO> addPlaylist(@RequestBody AddPlaylistDTO dto){
+        return null;
     }
 
 }
