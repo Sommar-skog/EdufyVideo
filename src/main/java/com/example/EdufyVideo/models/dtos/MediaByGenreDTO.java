@@ -3,16 +3,16 @@ package com.example.EdufyVideo.models.dtos;
 import java.util.List;
 
 //ED-270-AA
-public class MedaByGenreDTO {
+public class MediaByGenreDTO {
 
     private String genreName;
     private List<Long> mediaIds;
 
-    public MedaByGenreDTO() {
+    public MediaByGenreDTO() {
 
     }
 
-    public MedaByGenreDTO(String genreName, List<Long> mediaIds) {
+    public MediaByGenreDTO(String genreName, List<Long> mediaIds) {
         this.genreName = genreName;
         this.mediaIds = mediaIds;
     }
@@ -35,7 +35,7 @@ public class MedaByGenreDTO {
 
     @Override
     public String toString() {
-        return "MedaByGenreDTO{" +
+        return "MediaByGenreDTO{" +
                 "genreName='" + genreName + '\'' +
                 ", mediaIds=" + mediaIds +
                 '}';

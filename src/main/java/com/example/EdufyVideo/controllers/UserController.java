@@ -7,10 +7,7 @@ import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +36,12 @@ import java.util.List;
     @GetMapping("/playlist-title")
     public ResponseEntity<List<VideoPlaylistResponseDTO>> getVideoPlaylistByTitle (@RequestParam String title) {
             return ResponseEntity.ok(playlistService.getPlaylistsByTitle(title));
+    }
+
+    //ED-270-AA
+    @GetMapping("/videoclips/{genreId}")
+    public ResponseEntity<List<VideoClipResponseDTO>> getVideoClipsByGenre (@PathVariable Long genreId) {
+            return null;
     }
 
 
