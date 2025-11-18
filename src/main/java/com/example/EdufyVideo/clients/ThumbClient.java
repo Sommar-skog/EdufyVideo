@@ -2,7 +2,7 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.RegisterMediaDTO;
+import com.example.EdufyVideo.models.dtos.RegisterMediaThumbDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
@@ -24,7 +24,7 @@ public class ThumbClient {
         try {
              restClient.post()
                     .uri("/thumb/media/record")
-                    .body(new RegisterMediaDTO(mediaId,mediaType,mediaName))
+                    .body(new RegisterMediaThumbDTO(mediaId,mediaType,mediaName))
                     .retrieve()
                     .toBodilessEntity();
         } catch (RestClientResponseException ex) {

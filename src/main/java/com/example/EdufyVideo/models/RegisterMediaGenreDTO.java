@@ -1,22 +1,24 @@
-package com.example.EdufyVideo.models.dtos;
+package com.example.EdufyVideo.models;
 
 import com.example.EdufyVideo.models.enums.MediaType;
 
+import java.util.List;
+
 //ED-243-AA
-public class RegisterMediaDTO {
+public class RegisterMediaGenreDTO {
 
     private Long mediaId;
 
     private MediaType mediaType;
 
-    private String mediaName;
+    private List<Long> genreIds;
 
-    public RegisterMediaDTO() {}
+    public RegisterMediaGenreDTO() {}
 
-    public RegisterMediaDTO(Long mediaId, MediaType mediaType, String mediaName) {
+    public RegisterMediaGenreDTO(Long mediaId, MediaType mediaType, List<Long> genreIds) {
         this.mediaId = mediaId;
         this.mediaType = mediaType;
-        this.mediaName = mediaName;
+        this.genreIds = genreIds;
     }
 
     public Long getMediaId() {
@@ -31,19 +33,19 @@ public class RegisterMediaDTO {
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
-    public String getMediaName() {
-        return mediaName;
+    public List<Long> getGenreIds() {
+        return genreIds;
     }
-    public void setMediaName(String mediaName) {
-        this.mediaName = mediaName;
+    public void setGenreIds(List<Long> genreIds) {
+        this.genreIds = genreIds;
     }
 
     @Override
     public String toString() {
-        return "RegisterMediaDTO{" +
+        return "RegisterMediaGenreDTO{" +
                 "mediaId=" + mediaId +
                 ", mediaType=" + mediaType +
-                ", mediaName='" + mediaName + '\'' +
+                ", genreIds=" + genreIds +
                 '}';
     }
 }
