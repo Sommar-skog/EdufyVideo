@@ -11,6 +11,7 @@ public class AddVideoClipDTO {
     private String url;
     private LocalTime length;
     private List<Long> genreIds;
+    private Long playlistId;
 
     public String getTitle() {
         return title;
@@ -60,6 +61,14 @@ public class AddVideoClipDTO {
         this.genreIds = genreIds;
     }
 
+    public Long getPlaylistId() {
+        return playlistId;
+    }
+
+    public void setPlaylistId(Long playlistId) {
+        this.playlistId = playlistId;
+    }
+
     @Override
     public String toString() {
         return "AddVideoClipDTO{" +
@@ -69,6 +78,7 @@ public class AddVideoClipDTO {
                 ", url='" + url + '\'' +
                 ", length=" + length +
                 ", genreIds=" + genreIds +
+                ", playlistId=" + playlistId +
                 '}';
     }
 }
