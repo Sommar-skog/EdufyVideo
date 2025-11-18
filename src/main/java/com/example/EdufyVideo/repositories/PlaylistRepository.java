@@ -19,4 +19,6 @@ public interface PlaylistRepository extends JpaRepository<VideoPlaylist, Long> {
     //ED-85-AA
     List<VideoPlaylist> findAllByActiveTrue();
 
+    //ED-244-AA
+    boolean existsByUrl(String url);
 }

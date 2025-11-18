@@ -2,17 +2,23 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.exceptions.UniqueConflictException;
+import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
+import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,5 +88,79 @@ public class PlaylistServiceImpl implements PlaylistService {
                     .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
                     .collect(Collectors.toList());
         }
+    }
+
+    //ED-244-AA
+    @Override
+    public VideoPlaylistResponseDTO addPlaylist(AddPlaylistDTO addPlaylistDTO) {
+        List<CreatorDTO> creators = validateCreators(addPlaylistDTO.getCreatorIds());
+
+        VideoPlaylist playlist = new VideoPlaylist(
+
+        );
+        return null;
+    }
+
+/*    List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
+    List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
+    validateVideoClipData(addVideoClipDTO);
+
+    VideoClip videoClip = new VideoClip(
+            addVideoClipDTO.getTitle(),
+            addVideoClipDTO.getUrl(),
+            addVideoClipDTO.getDescription(),
+            addVideoClipDTO.getLength());
+
+    VideoClip savedClip = videoRepository.save(videoClip);
+
+        if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
+        addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+    }
+
+        genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
+        thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
+        creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
+
+        return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
+}*/
+
+    //ED-244-AA
+    private void validatePlaylistData(AddPlaylistDTO dto) {
+        if (dto.getTitle() == null || dto.getTitle().isBlank()) {
+            throw new InvalidInputException("Title cannot be null or blank");
+        }
+        if (dto.getTitle().length() > 100) {
+            throw new InvalidInputException("Title cannot exceed 100 characters");
+        }
+        if (dto.getUrl() == null || dto.getUrl().isBlank()) {
+            throw new InvalidInputException("Url cannot be null or blank");
+        }
+        if (dto.getDescription() == null || dto.getDescription().isBlank()) {
+            throw new InvalidInputException("Description cannot be null or blank");
+        }
+
+        validateUniqueUrl(dto.getUrl());
+    }
+
+    //ED-244-AA
+    private void validateUniqueUrl(String url) {
+        if (playlistRepository.existsByUrl(url)) {
+            throw new UniqueConflictException("url", url);
+        }
+    }
+
+    //ED-244-AA
+    private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
+        List<CreatorDTO> creators = new ArrayList<>();
+
+        creatorIds.forEach(id -> {
+            try {
+                CreatorDTO creator = creatorClient.getCreatorById(id);
+                creators.add(creator);
+            } catch (RestClientResponseException ex) {
+                throw new ResourceNotFoundException("Creator", "id", id);
+            }
+        });
+        return creators;
     }
 }

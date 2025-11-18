@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.controllers;
 
 
+import com.example.EdufyVideo.models.dtos.AddPlaylistDTO;
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;

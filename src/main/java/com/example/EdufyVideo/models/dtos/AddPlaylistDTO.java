@@ -1,6 +1,7 @@
 package com.example.EdufyVideo.models.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
 
 //ED-244-AA
 public class AddPlaylistDTO {
@@ -8,13 +9,15 @@ public class AddPlaylistDTO {
     private String title;
     private String url;
     private String description;
+    private List<Long> creatorIds;
 
     public AddPlaylistDTO() {}
 
-    public AddPlaylistDTO(String title, String url, String description) {
+    public AddPlaylistDTO(String title, String url, String description, List<Long> creatorIds) {
         this.title = title;
         this.url = url;
         this.description = description;
+        this.creatorIds = creatorIds;
     }
 
     public String getTitle() {
@@ -41,12 +44,21 @@ public class AddPlaylistDTO {
         this.description = description;
     }
 
+    public List<Long> getCreatorIds() {
+        return creatorIds;
+    }
+
+    public void setCreatorIds(List<Long> creatorIds) {
+        this.creatorIds = creatorIds;
+    }
+
     @Override
     public String toString() {
         return "AddPlaylistDTO{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", description='" + description + '\'' +
+                ", creatorIds=" + creatorIds +
                 '}';
     }
 }

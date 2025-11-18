@@ -40,13 +40,18 @@ public class VideoPlaylist {
 
     }
 
-    public VideoPlaylist(String title, String url, String description, LocalDate creationDate, List<PlaylistEntry> entryList, boolean active) {
+    public VideoPlaylist(String title, String url, String description) {
+        this.title = title;
+        this.url = url;
+        this.description = description;
+        this.creationDate = LocalDate.now();
+    }
+
+    public VideoPlaylist(String title, String url, String description, LocalDate creationDate) {
         this.title = title;
         this.url = url;
         this.description = description;
         this.creationDate = creationDate;
-        this.entryList = entryList;
-        this.active = active;
     }
 
     public VideoPlaylist(VideoPlaylist videoPlaylist) {
