@@ -113,6 +113,12 @@ public class VideoServiceImpl implements VideoService {
         List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
         validateVideoClipData(addVideoClipDTO);
 
+        VideoClip videoClip = new VideoClip(
+                addVideoClipDTO.getTitle(),
+                addVideoClipDTO.getUrl(),
+                addVideoClipDTO.getDescription(),
+                addVideoClipDTO.getLength(),
+
 
 
 

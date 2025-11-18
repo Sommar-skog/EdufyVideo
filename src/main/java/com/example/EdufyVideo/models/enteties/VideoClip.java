@@ -61,6 +61,16 @@ public class VideoClip {
         this.active = active;
     }
 
+    public VideoClip(String title, String url, String description, LocalTime length) {
+        this.title = title;
+        this.url = url;
+        this.description = description;
+        this.length = length;
+        this.releaseDate = LocalDate.now();
+        this.userHistory = new HashMap<>();
+        this.active = true;
+    }
+
     public VideoClip (VideoClip videoClip) {
         this.id = videoClip.id;
         this.title = videoClip.title;
