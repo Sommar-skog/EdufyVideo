@@ -40,7 +40,7 @@ public class AminController {
 
     @PostMapping("/playlist")
     public ResponseEntity<VideoPlaylistResponseDTO> addPlaylist(@RequestBody AddPlaylistDTO dto){
-        return null;
+        return ResponseEntity.ok(playlistService.addPlaylist(dto));
     }
 
 }
