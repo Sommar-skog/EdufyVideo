@@ -30,14 +30,14 @@ public class PlaylistServiceImpl implements PlaylistService {
     //Ed-79-AA
     private final PlaylistRepository playlistRepository;
     private final CreatorClient creatorClient;
-    private final GenreClient genreClient;
+
 
     //ED-79-AA
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, CreatorClient creatorClient, GenreClient genreClient) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository, CreatorClient creatorClient) {
         this.playlistRepository = playlistRepository;
         this.creatorClient = creatorClient;
-        this.genreClient = genreClient;
+
     }
 
 
@@ -95,52 +95,35 @@ public class PlaylistServiceImpl implements PlaylistService {
     public VideoPlaylistResponseDTO addPlaylist(AddPlaylistDTO addPlaylistDTO) {
         List<CreatorDTO> creators = validateCreators(addPlaylistDTO.getCreatorIds());
 
+        validatePlaylistData(addPlaylistDTO);
+
         VideoPlaylist playlist = new VideoPlaylist(
-
+                addPlaylistDTO.getTitle(),
+                addPlaylistDTO.getUrl(),
+                addPlaylistDTO.getDescription()
         );
-        return null;
+
+        VideoPlaylist savedPlaylist = playlistRepository.save(playlist);
+
+        creatorClient.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClient);
     }
-
-/*    List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
-    List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
-    validateVideoClipData(addVideoClipDTO);
-
-    VideoClip videoClip = new VideoClip(
-            addVideoClipDTO.getTitle(),
-            addVideoClipDTO.getUrl(),
-            addVideoClipDTO.getDescription(),
-            addVideoClipDTO.getLength());
-
-    VideoClip savedClip = videoRepository.save(videoClip);
-
-        if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
-        addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
-    }
-
-        genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
-        thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
-        creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
-
-        return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
-}*/
 
     //ED-244-AA
     private void validatePlaylistData(AddPlaylistDTO dto) {
         if (dto.getTitle() == null || dto.getTitle().isBlank()) {
-            throw new InvalidInputException("Title cannot be null or blank");
-        }
-        if (dto.getTitle().length() > 100) {
-            throw new InvalidInputException("Title cannot exceed 100 characters");
-        }
-        if (dto.getUrl() == null || dto.getUrl().isBlank()) {
-            throw new InvalidInputException("Url cannot be null or blank");
+            throw new InvalidInputException("Playlist title cannot be null or blank");
         }
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
-            throw new InvalidInputException("Description cannot be null or blank");
+            throw new InvalidInputException("Playlist description cannot be null or blank");
+        }
+        if (dto.getUrl() == null || dto.getUrl().isBlank()) {
+            throw new InvalidInputException("Playlist url cannot be null or blank");
         }
 
         validateUniqueUrl(dto.getUrl());
     }
+
 
     //ED-244-AA
     private void validateUniqueUrl(String url) {
@@ -154,10 +137,10 @@ public class PlaylistServiceImpl implements PlaylistService {
         List<CreatorDTO> creators = new ArrayList<>();
 
         creatorIds.forEach(id -> {
-            try {
+            try{
                 CreatorDTO creator = creatorClient.getCreatorById(id);
                 creators.add(creator);
-            } catch (RestClientResponseException ex) {
+            } catch (RestClientResponseException e) {
                 throw new ResourceNotFoundException("Creator", "id", id);
             }
         });
