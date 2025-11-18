@@ -50,6 +50,12 @@ public class GenreClient {
         }
     }
 
+    //ED-270-AA
+    public MedaByGenreDTO getVideoClipsByGenre (Long genreId, MediaType mediaType){
+
+    }
+
+    //ED-244-AA
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> genreIds) {
         try {
             ResponseEntity<Void> response = restClient.post()
