@@ -135,14 +135,11 @@ public class VideoServiceImpl implements VideoService {
                 addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
         }
 
-        if (genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(),addVideoClipDTO.getGenreIds()) &&
-                thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle()) &&
-        )
+        genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
+        thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
+        creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
-
-
-
-        return null;
+        return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
     }
 
     private void addVideoClipToPlaylists(List<Long> playlistIds, VideoClip videoClip) {

@@ -1,11 +1,18 @@
 package com.example.EdufyVideo.clients;
 
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
+import com.example.EdufyVideo.models.dtos.RegisterMediaCreatorDTO;
+import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,6 +64,28 @@ public class CreatorClient {
                     .body(new ParameterizedTypeReference<List<CreatorDTO>>() {
                     });
         } catch (Exception e) {
+            throw new RestClientException("EdufyVideo", "EdufyCreator");
+        }
+    }
+
+    //ED-243-AA
+    public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> creatorIds) {
+        try {
+            ResponseEntity<Void> response = restClient.post()
+                    .uri("creator/media/record")
+                    .body(new RegisterMediaCreatorDTO(mediaId, mediaType, creatorIds))
+                    .retrieve()
+                    .toBodilessEntity();
+
+            return response.getStatusCode() == HttpStatus.CREATED;
+
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Creator-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Thumb at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
