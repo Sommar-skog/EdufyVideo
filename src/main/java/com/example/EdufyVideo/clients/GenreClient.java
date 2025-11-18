@@ -1,11 +1,17 @@
 package com.example.EdufyVideo.clients;
 
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
+import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.dtos.GenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +26,18 @@ public class GenreClient {
         this.restClient = builder.baseUrl("http://EDUFYBENRE").build();
     }
 
+    //ED-243-AA
+    public GenreDTO getGenreById(Long genreId) {
+        try {
+            return restClient.get()
+                    .uri("/{id}", genreId)
+                    .retrieve()
+                    .body(GenreDTO.class);
+        } catch (Exception e) {
+            throw new RestClientException("EdufyVideo", "EdufyGenre");
+        }
+    }
+
     public List<GenreDTO> getGenresByMediaTypeAndMediaId (MediaType mediaType, Long mediaId) {
         try {
             return restClient.get()
@@ -28,6 +46,27 @@ public class GenreClient {
                     .body(new ParameterizedTypeReference<List<GenreDTO>>() {
                     });
         } catch (Exception e) {
+            throw new RestClientException("EdufyVideo", "EdufyGenre");
+        }
+    }
+
+    public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> genreIds) {
+        try {
+            ResponseEntity<Void> response = restClient.post()
+                    .uri("/genre/media/record")
+                    .body(new RegisterMediaGenreDTO( mediaId,mediaType, genreIds))
+                    .retrieve()
+                    .toBodilessEntity();
+
+            return response.getStatusCode() == HttpStatus.CREATED;
+
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Genre-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Thumb at all
             throw new RestClientException("EdufyVideo", "EdufyGenre");
         }
     }

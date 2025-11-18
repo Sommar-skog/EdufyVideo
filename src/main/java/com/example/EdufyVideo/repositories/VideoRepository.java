@@ -30,4 +30,7 @@ public interface VideoRepository  extends JpaRepository<VideoClip, Long> {
     // Returns how many times the given user has watched the specified video
     @Query("SELECT VALUE(h) FROM VideoClip v JOIN v.userHistory h WHERE v.id = :videoId AND KEY(h) = :userId")
     Long findTimesPlayedByUser(@Param("videoId") Long videoId, @Param("userId") Long userId);
+
+    //ED-243-AA
+    boolean existsByUrl(String url);
 }
