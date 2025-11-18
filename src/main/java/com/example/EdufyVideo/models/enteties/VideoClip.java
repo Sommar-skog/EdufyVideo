@@ -57,7 +57,6 @@ public class VideoClip {
         this.length = length;
         this.releaseDate = releaseDate;
         this.userHistory = userHistory;
-        this.playlistEntries = entries;
         this.active = active;
     }
 

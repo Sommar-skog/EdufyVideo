@@ -1,17 +1,18 @@
 package com.example.EdufyVideo.models.dtos;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddVideoClipDTO {
 
     private String title;
     private String description;
-    private List<Long> creatorIds;
+    private List<Long> creatorIds = new ArrayList<>();
     private String url;
     private LocalTime length;
-    private List<Long> genreIds;
-    private Long playlistId;
+    private List<Long> genreIds = new ArrayList<>();
+    private List<Long> playlistIds = new ArrayList<>();
 
     public String getTitle() {
         return title;
@@ -61,12 +62,11 @@ public class AddVideoClipDTO {
         this.genreIds = genreIds;
     }
 
-    public Long getPlaylistId() {
-        return playlistId;
+    public List<Long> getPlaylistIds() {
+        return playlistIds;
     }
-
-    public void setPlaylistId(Long playlistId) {
-        this.playlistId = playlistId;
+    public void setPlaylistId(List<Long> playlistId) {
+        this.playlistIds = playlistId;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class AddVideoClipDTO {
                 ", url='" + url + '\'' +
                 ", length=" + length +
                 ", genreIds=" + genreIds +
-                ", playlistId=" + playlistId +
+                ", playlistId=" + playlistIds +
                 '}';
     }
 }

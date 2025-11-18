@@ -2,13 +2,19 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
+import com.example.EdufyVideo.clients.ThumbClient;
 import com.example.EdufyVideo.clients.UserClient;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
+import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.enums.MediaType;
+import com.example.EdufyVideo.repositories.PlaylistEntryRepository;
+import com.example.EdufyVideo.repositories.PlaylistRepository;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,16 +37,20 @@ public class VideoServiceImpl implements VideoService {
     private final CreatorClient creatorClient;
     private final GenreClient genreClient;
     private final UserClient userClient;
-    private final PlaylistService playlistService; //ED-243-AA
+    private final ThumbClient thumbClient; //ED-243-AA
+    private final PlaylistRepository playlistRepository; //ED-243-AA;
+    private final PlaylistEntryRepository playlistEntryRepository;
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistService playlistService) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistEntryRepository playlistEntryRepository, ThumbClient thumbClient) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
         this.userClient = userClient;
-        this.playlistService = playlistService;
+        this.playlistRepository = playlistRepository;
+        this.playlistEntryRepository = playlistEntryRepository;
+        this.thumbClient = thumbClient;
     }
 
     //ED-78-AA
@@ -117,12 +127,38 @@ public class VideoServiceImpl implements VideoService {
                 addVideoClipDTO.getTitle(),
                 addVideoClipDTO.getUrl(),
                 addVideoClipDTO.getDescription(),
-                addVideoClipDTO.getLength(),
+                addVideoClipDTO.getLength());
+
+       VideoClip savedClip = videoRepository.save(videoClip);
+
+        if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
+                addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+        }
+
+        if (genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(),addVideoClipDTO.getGenreIds()) &&
+                thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle()) &&
+        )
 
 
 
 
         return null;
+    }
+
+    private void addVideoClipToPlaylists(List<Long> playlistIds, VideoClip videoClip) {
+
+        for (Long playlistId : playlistIds) {
+            VideoPlaylist playlist = playlistRepository.findById(playlistId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", playlistId));
+
+            int position = playlistEntryRepository.countByPlaylistId(playlistId) + 1;
+
+            PlaylistEntry entry = new PlaylistEntry();
+            entry.setPlaylist(playlist);
+            entry.setVideoClip(videoClip);
+            entry.setPosition(position);
+            playlistEntryRepository.save(entry);
+        }
     }
 
     //ED-243-AA
@@ -148,8 +184,12 @@ public class VideoServiceImpl implements VideoService {
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
             throw new InvalidInputException("At least one creator must be provided");
         }
-        if (dto.getPlaylistId() != null && dto.getPlaylistId() <= 0){
-            throw new InvalidInputException("Playlist id must be greater than zero");
+        if (dto.getPlaylistIds() != null && !dto.getPlaylistIds().isEmpty()) {
+            for (Long id : dto.getPlaylistIds()) {
+                if (id <= 0){
+                    throw new InvalidInputException("Playlist id must be a positive number");
+                }
+            }
         }
 
         validateUniqueUrl(dto.getUrl());
