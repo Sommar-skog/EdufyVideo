@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models;
+package com.example.EdufyVideo.models.dtos;
 
 import com.example.EdufyVideo.models.enums.MediaType;
 
@@ -10,6 +10,14 @@ public class RegisterMediaDTO {
     private MediaType mediaType;
 
     private String mediaName;
+
+    public RegisterMediaDTO() {}
+
+    public RegisterMediaDTO(Long mediaId, MediaType mediaType, String mediaName) {
+        this.mediaId = mediaId;
+        this.mediaType = mediaType;
+        this.mediaName = mediaName;
+    }
 
     public Long getMediaId() {
         return mediaId;
