@@ -12,6 +12,7 @@ import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -92,6 +93,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     //ED-244-AA
     @Override
+    @Transactional
     public VideoPlaylistResponseDTO addPlaylist(AddPlaylistDTO addPlaylistDTO) {
         List<CreatorDTO> creators = validateCreators(addPlaylistDTO.getCreatorIds());
 
@@ -106,7 +108,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         VideoPlaylist savedPlaylist = playlistRepository.save(playlist);
 
         creatorClient.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
-        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClient);
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClient);
     }
 
     //ED-244-AA

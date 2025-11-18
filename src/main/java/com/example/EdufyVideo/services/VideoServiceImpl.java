@@ -16,6 +16,7 @@ import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistEntryRepository;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import com.example.EdufyVideo.repositories.VideoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -115,9 +116,8 @@ public class VideoServiceImpl implements VideoService {
     }
 
     //ED-243-AA
-    //TODO Add thumb for VideoClip, add videoclip to Cretors id-list, add videoClip to genres id-list
-    //TODO Save to repository, return to Postman
     @Override
+    @Transactional//ED-244-AA
     public VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO) {
         List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
         List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
