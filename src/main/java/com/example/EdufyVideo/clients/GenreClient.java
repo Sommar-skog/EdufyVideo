@@ -2,9 +2,12 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
+import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.dtos.GenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -47,13 +50,16 @@ public class GenreClient {
         }
     }
 
-    public void createRecordeOfMedia(MediaType mediaType, Long mediaId, String mediaName) {
+    public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> genreIds) {
         try {
-            restClient.post()
+            ResponseEntity<Void> response = restClient.post()
                     .uri("/genre/media/record")
-                    .body()
+                    .body(new RegisterMediaGenreDTO( mediaId,mediaType, genreIds))
                     .retrieve()
                     .toBodilessEntity();
+
+            return response.getStatusCode() == HttpStatus.CREATED;
+
         } catch (RestClientResponseException ex) {
             // Client Call returns 400/404/409/500
             String error = ex.getResponseBodyAsString();
@@ -61,7 +67,7 @@ public class GenreClient {
 
         } catch (ResourceAccessException ex) {
             //Can not reach Thumb at all
-            throw new RestClientException("EdufyVideo", "EdufyThumb");
+            throw new RestClientException("EdufyVideo", "EdufyGenre");
         }
     }
 

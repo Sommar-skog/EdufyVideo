@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models;
+package com.example.EdufyVideo.models.dtos;
 
 import com.example.EdufyVideo.models.enums.MediaType;
 
