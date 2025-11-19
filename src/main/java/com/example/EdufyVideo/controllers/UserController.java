@@ -47,6 +47,12 @@ import java.util.List;
             return ResponseEntity.ok(videoAggregationService.getVideoClipsByGenre(genreId));
     }
 
+    //ED-255-AA
+    @GetMapping("/play/{videoClipId}")
+    public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId){
+            return null;
+    }
+
 
 
 
