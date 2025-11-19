@@ -19,13 +19,13 @@ public class ThumbClient {
 
     public ThumbClient(RestClient.Builder builder) {
 
-        this.restClient = builder.baseUrl("http://EDUFYTHUB;").build();
+        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/thumb").build();
     }
 
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, String mediaName) {
         try {
              ResponseEntity<Void> response= restClient.post()
-                    .uri("/thumb/media/record")
+                    .uri("/media/record")
                     .body(new RegisterMediaThumbDTO(mediaId,mediaType,mediaName))
                     .retrieve()
                     .toBodilessEntity();

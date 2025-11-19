@@ -12,13 +12,13 @@ public class UserClient {
     private final RestClient restClient;
 
     public UserClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://EDUFYUSER").build();
+        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/user").build();
     }
 
     public UserDTO getUserBySub(String sub) {
         try {
             return restClient.get()
-                    .uri("/user/user-sub/{sub}", sub)
+                    .uri("/user-sub/{sub}", sub)
                     .retrieve()
                     .body(UserDTO.class);
         } catch (Exception e) {
