@@ -1,5 +1,6 @@
 package com.example.EdufyVideo.controllers;
 
+import com.example.EdufyVideo.models.dtos.PlayedDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
@@ -8,6 +9,7 @@ import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +47,12 @@ import java.util.List;
     @GetMapping("/videoclips/{genreId}")
     public ResponseEntity<List<VideoClipResponseDTO>> getVideoClipsByGenre (@PathVariable Long genreId) {
             return ResponseEntity.ok(videoAggregationService.getVideoClipsByGenre(genreId));
+    }
+
+    //ED-255-AA
+    @GetMapping("/play/{videoClipId}")
+    public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
+            return ResponseEntity.ok(videoService.playVideoClip(videoClipId, auth));
     }
 
 

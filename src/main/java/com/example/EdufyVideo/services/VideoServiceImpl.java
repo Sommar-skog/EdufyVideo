@@ -103,6 +103,31 @@ public class VideoServiceImpl implements VideoService {
         }
     }
 
+    //ED-255-AA
+    @Override
+    public PlayedDTO playVideoClip(Long videoClipId, Authentication authentication) {
+        UserDTO user = userClient.getUserBySub(authentication.getName());
+
+        if (user.getId() == null){
+            throw new ResourceNotFoundException("UserClient returned id null");
+        }
+
+        VideoClip clip = videoRepository.findVideoClipByIdAndActiveTrue(videoClipId).orElseThrow(
+                () -> new ResourceNotFoundException("Active VideoClip", "id", videoClipId)
+        );
+
+        if (!clip.getUserHistory().containsKey(user.getId())){
+            clip.getUserHistory().put(user.getId(), 0L);
+        }
+
+        Long current = clip.getUserHistory().get(user.getId());
+        Long updated = current + 1;
+        clip.getUserHistory().put(user.getId(), updated);
+        videoRepository.save(clip);
+
+        return new PlayedDTO(clip.getUrl());
+    }
+
     //ED-282-AA
     @Override
     public List<VideoClipResponseDTO> getUserHistory(Long userId) {
