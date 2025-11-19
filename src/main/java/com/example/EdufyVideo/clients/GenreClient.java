@@ -24,7 +24,7 @@ public class GenreClient {
     private final RestClient restClient;
 
     public GenreClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://EDUFYBENRE").build();
+        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/genre").build();
     }
 
     //ED-243-AA
@@ -42,7 +42,7 @@ public class GenreClient {
     public List<GenreDTO> getGenresByMediaTypeAndMediaId (MediaType mediaType, Long mediaId) {
         try {
             return restClient.get()
-                    .uri("/genre/by/media-id/{mediaType}/{mediaId}", mediaType, mediaId) //TODO update url after method is done.
+                    .uri("/by/media-id/{mediaType}/{mediaId}", mediaType, mediaId)
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<GenreDTO>>() {
                     });
@@ -71,7 +71,7 @@ public class GenreClient {
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> genreIds) {
         try {
             ResponseEntity<Void> response = restClient.post()
-                    .uri("/genre/media/record")
+                    .uri("/media/record")
                     .body(new RegisterMediaGenreDTO( mediaId,mediaType, genreIds))
                     .retrieve()
                     .toBodilessEntity();

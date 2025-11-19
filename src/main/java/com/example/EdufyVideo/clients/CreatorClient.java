@@ -25,13 +25,13 @@ public class CreatorClient {
     private final RestClient restClient;
 
     public CreatorClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://EDUFYCREATOR").build();
+        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
     }
 
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
-                    .uri("/creator/creator/{id}", creatorId)
+                    .uri("/creator/{id}", creatorId)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -43,7 +43,7 @@ public class CreatorClient {
     public CreatorDTO getCreatorWithMediaList(Long creatorId, MediaType mediaType) {
         try {
             return restClient.get()
-                    .uri("/creator/creator/{mediaType}/{id}", mediaType, creatorId)//TODO update url after method is done.
+                    .uri("/creator/{mediaType}/{id}", mediaType, creatorId)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class CreatorClient {
         try {
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/creator/creators-media") //TODO update url after method is done.
+                            .path("/creator/creators-media")
                             .queryParam("mediaType", mediaType.name())
                             .queryParam("mediaId", mediaId)
                             .build())
@@ -72,7 +72,7 @@ public class CreatorClient {
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> creatorIds) {
         try {
             ResponseEntity<Void> response = restClient.post()
-                    .uri("creator/media/record")
+                    .uri("/media/record")
                     .body(new RegisterMediaCreatorDTO(mediaId, mediaType, creatorIds))
                     .retrieve()
                     .toBodilessEntity();
