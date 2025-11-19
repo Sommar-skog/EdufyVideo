@@ -42,7 +42,7 @@ public class GenreClient {
     public List<GenreDTO> getGenresByMediaTypeAndMediaId (MediaType mediaType, Long mediaId) {
         try {
             return restClient.get()
-                    .uri("/by/media-id/{mediaType}/{mediaId}", mediaType, mediaId) //TODO update url after method is done.
+                    .uri("/by/media-id/{mediaType}/{mediaId}", mediaType, mediaId)
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<GenreDTO>>() {
                     });

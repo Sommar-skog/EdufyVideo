@@ -43,7 +43,7 @@ public class CreatorClient {
     public CreatorDTO getCreatorWithMediaList(Long creatorId, MediaType mediaType) {
         try {
             return restClient.get()
-                    .uri("/creator/{mediaType}/{id}", mediaType, creatorId)//TODO update url after method is done.
+                    .uri("/creator/{mediaType}/{id}", mediaType, creatorId)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class CreatorClient {
         try {
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/creator/creators-media") //TODO update url after method is done.
+                            .path("/creator/creators-media")
                             .queryParam("mediaType", mediaType.name())
                             .queryParam("mediaId", mediaId)
                             .build())
