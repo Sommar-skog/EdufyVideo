@@ -3,14 +3,12 @@ package com.example.EdufyVideo.controllers;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
+import com.example.EdufyVideo.services.VideoAggregationService;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,11 +20,13 @@ import java.util.List;
 
         private final VideoService videoService;
         private final PlaylistService playlistService;
+        private final VideoAggregationService videoAggregationService;
 
         @Autowired
-        public UserController(VideoService videoService, PlaylistService playlistService) {
+        public UserController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
             this.videoService = videoService;
             this.playlistService = playlistService;
+            this.videoAggregationService = videoAggregationService;
         }
 
     //ED-57-AA
@@ -39,6 +39,12 @@ import java.util.List;
     @GetMapping("/playlist-title")
     public ResponseEntity<List<VideoPlaylistResponseDTO>> getVideoPlaylistByTitle (@RequestParam String title) {
             return ResponseEntity.ok(playlistService.getPlaylistsByTitle(title));
+    }
+
+    //ED-270-AA
+    @GetMapping("/videoclips/{genreId}")
+    public ResponseEntity<List<VideoClipResponseDTO>> getVideoClipsByGenre (@PathVariable Long genreId) {
+            return ResponseEntity.ok(videoAggregationService.getVideoClipsByGenre(genreId));
     }
 
 

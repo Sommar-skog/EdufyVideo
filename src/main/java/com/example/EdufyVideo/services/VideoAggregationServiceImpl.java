@@ -2,11 +2,9 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.CreatorDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideographyResponseDTO;
+import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
 import com.example.EdufyVideo.models.enteties.VideoClip;
@@ -26,6 +24,7 @@ import java.util.function.Predicate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 //ED-61-AA
 @Service
@@ -42,6 +41,22 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
         this.playlistRepository = playlistRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
+    }
+
+    //ED-270-AA
+    @Override
+    public List<VideoClipResponseDTO> getVideoClipsByGenre(Long genreId) {
+        MediaByGenreDTO mediaByGenreDTO = genreClient.getVideoClipsByGenre(genreId,MediaType.VIDEO_CLIP);
+
+        List<VideoClip> clips = new ArrayList<>();
+        mediaByGenreDTO.getMediaIds().forEach(mediaId -> {
+            VideoClip videoClip = videoRepository.findById(mediaId).orElseThrow(
+                    () -> new InvalidInputException("VideoClip", "videoClipId", mediaId)
+            );
+            clips.add(videoClip);
+        });
+
+        return clips.stream().map(c -> VideoClipResponseMapper.toDTOUser(c, creatorClient, genreClient)).collect(Collectors.toList());
     }
 
     //ED-61-AA
