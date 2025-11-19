@@ -52,7 +52,7 @@ import java.util.List;
     //ED-255-AA
     @GetMapping("/play/{videoClipId}")
     public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
-            return null;
+            return ResponseEntity.ok(videoService.playVideoClip(videoClipId, auth));
     }
 
 
