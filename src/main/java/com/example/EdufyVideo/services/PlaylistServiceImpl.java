@@ -117,11 +117,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     //ED-315-AA
     @Override
-    public VideoPlaylistResponseDTO addVideoClipsToPlaylist(Long playlistId, List<Long> clipIds) {
+    public VideoPlaylistResponseDTO addVideoClipsToPlaylist(Long playlistId, AddVClipToPlaylistDTO addVClipToPlaylistDTO) {
         VideoPlaylist playlist = playlistRepository.findById(playlistId).orElseThrow(
                 () -> new ResourceNotFoundException("VideoPlaylist", "id", playlistId)
         );
 
+        List<Long> clipIds = addVClipToPlaylistDTO.getVideoClipIds();
         for (Long clipId : clipIds) {
             VideoClip videoClip = videoRepository.findById(clipId).orElseThrow(
                     () -> new ResourceNotFoundException("VideoClip", "id", clipId)

@@ -38,8 +38,8 @@ public class AminController {
     }
 
     @PostMapping("/playlist/{playlistid}/videoclips/add")
-    public ResponseEntity<VideoPlaylistResponseDTO> addVideoClipsToPlaylist(@PathVariable("playlistid") String playlistId, @RequestBody AddVClipToPlaylistDTO dto){
-        return null; //TODO change when method are done
+    public ResponseEntity<VideoPlaylistResponseDTO> addVideoClipsToPlaylist(@PathVariable("playlistid") Long playlistId, @RequestBody AddVClipToPlaylistDTO dto) {
+        return ResponseEntity.ok(playlistService.addVideoClipsToPlaylist(playlistId, dto));
     }
 
 }
