@@ -23,6 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,17 +41,18 @@ public class VideoServiceImpl implements VideoService {
     private final UserClient userClient;
     private final ThumbClient thumbClient; //ED-243-AA
     private final PlaylistRepository playlistRepository; //ED-243-AA;
-    private final PlaylistEntryRepository playlistEntryRepository;
+    private final PlaylistService playlistService;
+
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistEntryRepository playlistEntryRepository, ThumbClient thumbClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistService playlistService, ThumbClient thumbClient) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
         this.userClient = userClient;
         this.playlistRepository = playlistRepository;
-        this.playlistEntryRepository = playlistEntryRepository;
+        this.playlistService = playlistService;
         this.thumbClient = thumbClient;
     }
 
@@ -157,7 +159,7 @@ public class VideoServiceImpl implements VideoService {
        VideoClip savedClip = videoRepository.save(videoClip);
 
         if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
-                addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+                playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
         }
 
         genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
@@ -165,22 +167,6 @@ public class VideoServiceImpl implements VideoService {
         creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
         return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
-    }
-
-    private void addVideoClipToPlaylists(List<Long> playlistIds, VideoClip videoClip) {
-
-        for (Long playlistId : playlistIds) {
-            VideoPlaylist playlist = playlistRepository.findById(playlistId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", playlistId));
-
-            int position = playlistEntryRepository.countByPlaylistId(playlistId) + 1;
-
-            PlaylistEntry entry = new PlaylistEntry();
-            entry.setPlaylist(playlist);
-            entry.setVideoClip(videoClip);
-            entry.setPosition(position);
-            playlistEntryRepository.save(entry);
-        }
     }
 
     //ED-243-AA
@@ -194,19 +180,38 @@ public class VideoServiceImpl implements VideoService {
         if (dto.getUrl() == null || dto.getUrl().isBlank()) {
             throw new InvalidInputException("Url cannot be null or blank");
         }
+        String trimmedUrl = dto.getUrl().trim();
+        if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+            throw new InvalidInputException("Url must start with http:// or https://");
+        }
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
             throw new InvalidInputException("Description cannot be null or blank");
         }
+        if (dto.getDescription().length() > 255) {
+            throw new InvalidInputException("Description cannot exceed 255 characters");
+        }
         if (dto.getLength() == null) {
-            throw new InvalidInputException("Length cannot be null or blank");
+            throw new InvalidInputException("Length cannot be null");
+        }
+        if (dto.getLength().equals(LocalTime.MIDNIGHT)) {
+            throw new InvalidInputException("Length cannot be 00:00:00");
         }
         if (dto.getGenreIds() == null || dto.getGenreIds().isEmpty()) {
             throw new InvalidInputException("At least one genre must be provided");
         }
+        if (dto.getGenreIds().contains(null)) {
+            throw new InvalidInputException("Genre list contains null value");
+        }
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
             throw new InvalidInputException("At least one creator must be provided");
         }
+        if (dto.getCreatorIds().contains(null)) {
+            throw new InvalidInputException("Creator list contains null value");
+        }
         if (dto.getPlaylistIds() != null && !dto.getPlaylistIds().isEmpty()) {
+            if (dto.getPlaylistIds().contains(null)) {
+                throw new InvalidInputException("Playlist list contains null value");
+            }
             for (Long id : dto.getPlaylistIds()) {
                 if (id <= 0){
                     throw new InvalidInputException("Playlist id must be a positive number");
@@ -214,7 +219,7 @@ public class VideoServiceImpl implements VideoService {
             }
         }
 
-        validateUniqueUrl(dto.getUrl());
+        validateUniqueUrl(trimmedUrl);
     }
 
     //ED-243-AA
@@ -226,6 +231,16 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-243-AA
     private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
+        if (creatorIds == null) {
+            throw new InvalidInputException("Creator list cannot be null");
+        }
+        if (creatorIds.isEmpty()) {
+            throw new InvalidInputException("Creator list cannot be empty");
+        }
+        if (creatorIds.contains(null)) {
+            throw new InvalidInputException("Creator list contains null value");
+        }
+
         List<CreatorDTO> creators = new ArrayList<>();
 
         creatorIds.forEach(id -> {
@@ -241,6 +256,16 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-243-AA
     private List<GenreDTO> validateGenres(List<Long> genreIds) {
+        if (genreIds == null) {
+            throw new InvalidInputException("Genre list cannot be null");
+        }
+        if (genreIds.isEmpty()) {
+            throw new InvalidInputException("Genre list cannot be empty");
+        }
+        if (genreIds.contains(null)) {
+            throw new InvalidInputException("Genre list contains null value");
+        }
+
         List<GenreDTO> genres = new ArrayList<>();
         genreIds.forEach(id -> {
             try {
