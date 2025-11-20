@@ -179,6 +179,9 @@ public class VideoServiceImpl implements VideoService {
         if (dto.getUrl() == null || dto.getUrl().isBlank()) {
             throw new InvalidInputException("Url cannot be null or blank");
         }
+        if (!dto.getUrl().startsWith("http://") && !dto.getUrl().startsWith("https://")) {
+            throw new InvalidInputException("Url must start with http:// or https://");
+        }
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
             throw new InvalidInputException("Description cannot be null or blank");
         }

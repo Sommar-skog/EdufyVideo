@@ -136,11 +136,17 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (dto.getTitle() == null || dto.getTitle().isBlank()) {
             throw new InvalidInputException("Playlist title cannot be null or blank");
         }
+        if (dto.getTitle().length() > 100) {
+            throw new InvalidInputException("Title cannot exceed 100 characters");
+        }
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
             throw new InvalidInputException("Playlist description cannot be null or blank");
         }
         if (dto.getUrl() == null || dto.getUrl().isBlank()) {
             throw new InvalidInputException("Playlist url cannot be null or blank");
+        }
+        if (!dto.getUrl().startsWith("http://") && !dto.getUrl().startsWith("https://")) {
+            throw new InvalidInputException("Url must start with http:// or https://");
         }
 
         validateUniqueUrl(dto.getUrl());
