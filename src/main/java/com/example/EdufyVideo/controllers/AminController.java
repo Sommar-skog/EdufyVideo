@@ -1,20 +1,14 @@
 package com.example.EdufyVideo.controllers;
 
 
-import com.example.EdufyVideo.models.dtos.AddPlaylistDTO;
-import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.services.PlaylistService;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/video")
@@ -41,6 +35,11 @@ public class AminController {
     @PostMapping("/playlist")
     public ResponseEntity<VideoPlaylistResponseDTO> addPlaylist(@RequestBody AddPlaylistDTO dto){
         return ResponseEntity.ok(playlistService.addPlaylist(dto));
+    }
+
+    @PostMapping("/playlist/{playlistid}/videoclips/add")
+    public ResponseEntity<VideoPlaylistResponseDTO> addVideoClipsToPlaylist(@PathVariable("playlistid") String playlistId, @RequestBody AddVClipToPlaylistDTO dto){
+        return null; //TODO change when method are done
     }
 
 }
