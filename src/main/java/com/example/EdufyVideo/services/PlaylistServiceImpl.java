@@ -12,6 +12,7 @@ import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistEntryRepository;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
+import com.example.EdufyVideo.repositories.VideoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,14 +32,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     //Ed-79-AA
     private final PlaylistRepository playlistRepository;
     private final PlaylistEntryRepository playlistEntryRepository; //ED-315-AA
+    private final VideoRepository videoRepository;
     private final CreatorClient creatorClient;
 
 
     //ED-79-AA
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, CreatorClient creatorClient) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, VideoRepository videoRepository, CreatorClient creatorClient) {
         this.playlistRepository = playlistRepository;
         this.playlistEntryRepository = playlistEntryRepository;
+        this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
     }
 
@@ -112,6 +115,22 @@ public class PlaylistServiceImpl implements PlaylistService {
         return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClient);
     }
 
+    //ED-315-AA
+    @Override
+    public VideoPlaylistResponseDTO addVideoClipsToPlaylist(Long playlistId, List<Long> clipIds) {
+        VideoPlaylist playlist = playlistRepository.findById(playlistId).orElseThrow(
+                () -> new ResourceNotFoundException("VideoPlaylist", "id", playlistId)
+        );
+
+        for (Long clipId : clipIds) {
+            VideoClip videoClip = videoRepository.findById(clipId).orElseThrow(
+                    () -> new ResourceNotFoundException("VideoClip", "id", clipId)
+            );
+            addVideoClipToPlaylists(List.of(playlistId),videoClip);
+        }
+
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClient);
+    }
 
     //ED-315-AA (changed from videoservice to playlist service)
     @Override
@@ -142,14 +161,18 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (dto.getDescription() == null || dto.getDescription().isBlank()) {
             throw new InvalidInputException("Playlist description cannot be null or blank");
         }
+        if (dto.getDescription().length() > 255) {
+            throw new InvalidInputException("Description cannot exceed 255 characters");
+        }
         if (dto.getUrl() == null || dto.getUrl().isBlank()) {
             throw new InvalidInputException("Playlist url cannot be null or blank");
         }
-        if (!dto.getUrl().startsWith("http://") && !dto.getUrl().startsWith("https://")) {
+        String trimmedUrl = dto.getUrl().trim();
+        if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
             throw new InvalidInputException("Url must start with http:// or https://");
         }
 
-        validateUniqueUrl(dto.getUrl());
+        validateUniqueUrl(trimmedUrl);
     }
 
 
@@ -162,6 +185,15 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     //ED-244-AA
     private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
+        if (creatorIds == null) {
+            throw new InvalidInputException("Creator list cannot be null");
+        }
+        if (creatorIds.isEmpty()) {
+            throw new InvalidInputException("Creator list cannot be empty");
+        }
+        if (creatorIds.contains(null)) {
+            throw new InvalidInputException("Creator list contains null value");
+        }
         List<CreatorDTO> creators = new ArrayList<>();
 
         creatorIds.forEach(id -> {

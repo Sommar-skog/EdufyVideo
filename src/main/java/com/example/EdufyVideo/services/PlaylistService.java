@@ -25,4 +25,7 @@ public interface PlaylistService {
 
     //ED-315-AA
     void addVideoClipToPlaylists(List<Long> playlistIds, VideoClip videoClip);
+
+    //ED-315-AA
+    VideoPlaylistResponseDTO addVideoClipsToPlaylist(Long playlistId, List<Long> clipIds);
 }
