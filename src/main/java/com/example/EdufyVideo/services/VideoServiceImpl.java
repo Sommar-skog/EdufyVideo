@@ -40,17 +40,18 @@ public class VideoServiceImpl implements VideoService {
     private final UserClient userClient;
     private final ThumbClient thumbClient; //ED-243-AA
     private final PlaylistRepository playlistRepository; //ED-243-AA;
-    private final PlaylistEntryRepository playlistEntryRepository;
+    private final PlaylistService playlistService;
+
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistEntryRepository playlistEntryRepository, ThumbClient thumbClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistService playlistService, ThumbClient thumbClient) {
         this.videoRepository = videoRepository;
         this.creatorClient = creatorClient;
         this.genreClient = genreClient;
         this.userClient = userClient;
         this.playlistRepository = playlistRepository;
-        this.playlistEntryRepository = playlistEntryRepository;
+        this.playlistService = playlistService;
         this.thumbClient = thumbClient;
     }
 
@@ -157,7 +158,7 @@ public class VideoServiceImpl implements VideoService {
        VideoClip savedClip = videoRepository.save(videoClip);
 
         if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
-                addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+                playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
         }
 
         genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
@@ -165,22 +166,6 @@ public class VideoServiceImpl implements VideoService {
         creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
         return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
-    }
-
-    private void addVideoClipToPlaylists(List<Long> playlistIds, VideoClip videoClip) {
-
-        for (Long playlistId : playlistIds) {
-            VideoPlaylist playlist = playlistRepository.findById(playlistId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Playlist", "id", playlistId));
-
-            int position = playlistEntryRepository.countByPlaylistId(playlistId) + 1;
-
-            PlaylistEntry entry = new PlaylistEntry();
-            entry.setPlaylist(playlist);
-            entry.setVideoClip(videoClip);
-            entry.setPosition(position);
-            playlistEntryRepository.save(entry);
-        }
     }
 
     //ED-243-AA
