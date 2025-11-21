@@ -9,16 +9,16 @@ INSERT IGNORE INTO video_playlist (
    video_playlist_creation_date,
    video_playlist_active
 ) VALUES
-    (1, 'Voices of Tomorrow', 'https://video.example.com/playlist/1-voices-of-tomorrow', '...beskrivning...', '2023-01-01', true),
-    (2, 'Echoes of History', 'https://video.example.com/playlist/2-echoes-of-history', '...beskrivning...', '2023-01-01', true),
-    (3, 'Mind Over Matter', 'https://video.example.com/playlist/3-mind-over-matter', '...beskrivning...', '2023-01-01', true),
-    (4, 'The Cosmic Frequency', 'https://video.example.com/playlist/4-the-cosmic-frequency', '...beskrivning...', '2023-01-01', true),
-    (5, 'Urban Legends Uncovered', 'https://video.example.com/playlist/5-urban-legends-uncovered', '...beskrivning...', '2023-01-01', true),
-    (6, 'Creative Minds', 'https://video.example.com/playlist/6-creative-minds', '...beskrivning...', '2023-01-01', true),
-    (7, 'The Sound of Science', 'https://video.example.com/playlist/7-the-sound-of-science', '...beskrivning...', '2023-01-01', true),
-    (8, 'Future Frontiers', 'https://video.example.com/playlist/8-future-frontiers', '...beskrivning...', '2023-01-01', true),
-    (9, 'Coffee and Conversations', 'https://video.example.com/playlist/9-coffee-and-conversations', '...beskrivning...', '2023-01-01', true),
-    (10, 'The Hidden Signal', 'https://video.example.com/playlist/10-the-hidden-signal', '...beskrivning...', '2023-01-01', false);
+    (1, 'Voices of Tomorrow', 'https://video.example.com/playlist/1-voices-of-tomorrow', 'Stories shaping the future.', '2023-01-01', true),
+    (2, 'Echoes of History', 'https://video.example.com/playlist/2-echoes-of-history', 'Insights from the past.', '2023-01-01', true),
+    (3, 'Mind Over Matter', 'https://video.example.com/playlist/3-mind-over-matter', 'Exploring ideas and mindset.', '2023-01-01', true),
+    (4, 'The Cosmic Frequency', 'https://video.example.com/playlist/4-the-cosmic-frequency', 'Journeys across the universe.', '2023-01-01', true),
+    (5, 'Urban Legends Uncovered', 'https://video.example.com/playlist/5-urban-legends-uncovered', 'Unveiling modern myths.', '2023-01-01', true),
+    (6, 'Creative Minds', 'https://video.example.com/playlist/6-creative-minds', 'Conversations with creators.', '2023-01-01', true),
+    (7, 'The Sound of Science', 'https://video.example.com/playlist/7-the-sound-of-science', 'Science explained simply.', '2023-01-01', true),
+    (8, 'Future Frontiers', 'https://video.example.com/playlist/8-future-frontiers', 'Exploring tomorrow’s innovations.', '2023-01-01', true),
+    (9, 'Coffee and Conversations', 'https://video.example.com/playlist/9-coffee-and-conversations', 'Relaxed talks over coffee.', '2023-01-01', true),
+    (10, 'The Hidden Signal', 'https://video.example.com/playlist/10-the-hidden-signal', 'Uncovering unseen patterns.', '2023-01-01', false);
 
 -- Insert video clips
 INSERT IGNORE INTO video_clip (
