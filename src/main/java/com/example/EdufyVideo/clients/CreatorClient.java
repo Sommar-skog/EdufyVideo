@@ -24,8 +24,14 @@ public class CreatorClient {
 
     private final RestClient restClient;
 
-    public CreatorClient(RestClient.Builder builder) {
+/*    public CreatorClient(RestClient.Builder builder) {
         this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
+    }*/
+    public CreatorClient(RestClient restClient) {
+        this.restClient = restClient
+                .mutate()
+                .baseUrl("http://gateway:4545/api/v1/creator")
+                .build();
     }
 
     public CreatorDTO getCreatorById(Long creatorId) {
@@ -96,7 +102,7 @@ public class CreatorClient {
             List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
 
             if (creators == null || creators.isEmpty()) {
-                return List.of("CREATOR UNKNOWN");
+                return List.of("CREATOR UNKNOWN ");
             }
 
             return creators.stream()
@@ -105,7 +111,7 @@ public class CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN");
+            return List.of("CREATOR UNKNOWN " + e.getMessage());
         }
     }
 
@@ -113,6 +119,7 @@ public class CreatorClient {
     public List<String> getCreatorIdAndUsernameByMedia(MediaType mediaType, long mediaId) {
         try {
             List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
+            System.out.println(creators);
 
             if (creators == null || creators.isEmpty()) {
                 return List.of("CREATOR UNKNOWN");
@@ -124,7 +131,7 @@ public class CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN");
+            return List.of("CREATOR UNKNOWN" + e.getMessage());
         }
     }
 
