@@ -31,7 +31,7 @@ public class CreatorClient {
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
-                    .uri("/creator/{id}", creatorId)
+                    .uri("/{id}/clientcall", creatorId)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -39,11 +39,11 @@ public class CreatorClient {
         }
     }
 
-    //ED-61-AA (Get CreatorDTO with creator ID and a list of MeidaIds
+    //ED-61-AA //Get list of DTOs with just mediaId
     public CreatorDTO getCreatorWithMediaList(Long creatorId, MediaType mediaType) {
         try {
             return restClient.get()
-                    .uri("/creator/{mediaType}/{id}", mediaType, creatorId)
+                    .uri("/mediabycreator/{creatorId}/{mediaType}", creatorId, mediaType)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
