@@ -56,9 +56,9 @@ public class CreatorClient {
         try {
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/creator/creators-media")
+                            .path("/creators-mediaid")
                             .queryParam("mediaType", mediaType.name())
-                            .queryParam("mediaId", mediaId)
+                            .queryParam("id", mediaId)
                             .build())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<CreatorDTO>>() {
