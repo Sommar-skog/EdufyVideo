@@ -69,7 +69,13 @@ public class CreatorClient {
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<CreatorDTO>>() {
                     });
-        } catch (Exception e) {
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Creator-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Creators at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
@@ -91,7 +97,7 @@ public class CreatorClient {
             throw new InvalidInputException("Creator-service error: " + error);
 
         } catch (ResourceAccessException ex) {
-            //Can not reach Thumb at all
+            //Can not reach Creator at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
