@@ -18,7 +18,7 @@ public class UserClient {
     public UserDTO getUserBySub(String sub) {
         try {
             return restClient.get()
-                    .uri("/user-sub/{sub}", sub)
+                    .uri("/user-sub/{sub}/clientcall", sub)
                     .retrieve()
                     .body(UserDTO.class);
         } catch (Exception e) {
