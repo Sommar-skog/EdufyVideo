@@ -3,8 +3,8 @@ package com.example.EdufyVideo.clients;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
+import com.example.EdufyVideo.models.dtos.MediaDTO;
 import com.example.EdufyVideo.models.dtos.RegisterMediaCreatorDTO;
-import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -39,13 +39,13 @@ public class CreatorClient {
         }
     }
 
-    //ED-61-AA //Get list of DTOs with just mediaId
-    public CreatorDTO getCreatorWithMediaList(Long creatorId, MediaType mediaType) {
+    //ED-61-AA //Get list of DTOs with just mediaId //ED-345-AA
+    public List<MediaDTO> getMediaListFromCreator(Long creatorId, MediaType mediaType) {
         try {
             return restClient.get()
                     .uri("/mediabycreator/{creatorId}/{mediaType}", creatorId, mediaType)
                     .retrieve()
-                    .body(CreatorDTO.class);
+                    .body(new ParameterizedTypeReference<List<MediaDTO>>() {});
         } catch (Exception e) {
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
