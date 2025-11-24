@@ -20,24 +20,18 @@ import java.util.Objects;
 
 //ED-61-AA
 @Service
-public class CreatorClient {
+public class CreatorClientImpl implements ClientService {
 
     private final RestClient restClient;
 
-/*    public CreatorClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
-    }*/
-    public CreatorClient(RestClient restClient) {
-        this.restClient = restClient
-                .mutate()
-                .baseUrl("http://gateway:4545/api/v1/creator")
-                .build();
-    }
+        public CreatorClientImpl(RestClient.Builder builder) {
+            this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
+        }
 
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
-                    .uri("/{id}/clientcall", creatorId)
+                    .uri("creator/{id}/clientcall", creatorId)
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -59,6 +53,7 @@ public class CreatorClient {
 
 
     public List<CreatorDTO> getCreatorsByMediaTypeAndMediaId(MediaType mediaType, long mediaId) {
+        System.out.println(mediaId  +" "+mediaType.name());
         try {
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
