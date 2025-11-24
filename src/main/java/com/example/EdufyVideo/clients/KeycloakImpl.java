@@ -47,4 +47,5 @@ public class KeycloakImpl implements Keycloak {
         // Return access token
         assert tokenResponse != null;
         return tokenResponse.accessToken();
+    }
 }

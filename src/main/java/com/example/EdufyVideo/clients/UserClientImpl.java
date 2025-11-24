@@ -10,15 +10,18 @@ import org.springframework.web.client.RestClient;
 public class UserClientImpl {
 
     private final RestClient restClient;
+    private final Keycloak keycloak;
 
-    public UserClientImpl(RestClient.Builder builder) {
+    public UserClientImpl(RestClient.Builder builder, Keycloak keycloak) {
         this.restClient = builder.baseUrl("http://gateway:4545/api/v1/user").build();
+        this.keycloak = keycloak;
     }
 
     public UserDTO getUserBySub(String sub) {
         try {
             return restClient.get()
                     .uri("/user-sub/{sub}/clientcall", sub)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(UserDTO.class);
         } catch (Exception e) {

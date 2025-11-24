@@ -63,8 +63,8 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
         List<MediaDTO> clipIds = creatorClientImpl.getMediaListFromCreator(creatorId, MediaType.VIDEO_CLIP);
         List<MediaDTO> playlistIds = creatorClientImpl.getMediaListFromCreator(creatorId, MediaType.VIDEO_PLAYLIST);
 
-        List<Long> videoClipIds = clipIds.stream().map(MediaDTO::getId).collect(Collectors.toList());
-        List<Long> videoPlaylistIds = playlistIds.stream().map(MediaDTO::getId).collect(Collectors.toList());
+        List<Long> videoClipIds = clipIds.stream().map(MediaDTO::getMediaId).collect(Collectors.toList());
+        List<Long> videoPlaylistIds = playlistIds.stream().map(MediaDTO::getMediaId).collect(Collectors.toList());
 
         List<VideoClip> videos;
         List<VideoPlaylist> playlists;

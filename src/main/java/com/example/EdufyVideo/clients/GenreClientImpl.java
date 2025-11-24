@@ -22,9 +22,11 @@ import java.util.Objects;
 public class GenreClientImpl implements GenreClient {
 
     private final RestClient restClient;
+    private final Keycloak keycloak;
 
-    public GenreClientImpl(RestClient.Builder builder) {
+    public GenreClientImpl(RestClient.Builder builder, Keycloak keycloak) {
         this.restClient = builder.baseUrl("http://gateway:4545/api/v1/genre").build();
+        this.keycloak = keycloak;
     }
 
     //ED-243-AA
@@ -32,6 +34,7 @@ public class GenreClientImpl implements GenreClient {
         try {
             return restClient.get()
                     .uri("/{id}", genreId)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(GenreDTO.class);
         } catch (Exception e) {
@@ -43,6 +46,7 @@ public class GenreClientImpl implements GenreClient {
         try {
             return restClient.get()
                     .uri("/by/media-id/{mediaType}/{mediaId}", mediaType, mediaId)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<GenreDTO>>() {
                     });
@@ -56,6 +60,7 @@ public class GenreClientImpl implements GenreClient {
             try {
                 return restClient.get()
                         .uri("/{genreId}/media/by-type/{mediaType}", genreId, mediaType)
+                        .header("Authorization", "Bearer " + keycloak.getAccessToken())
                         .retrieve()
                         .body(MediaByGenreDTO.class);
             } catch (ResourceAccessException e) {
@@ -73,6 +78,7 @@ public class GenreClientImpl implements GenreClient {
             ResponseEntity<Void> response = restClient.post()
                     .uri("/media/record")
                     .body(new RegisterMediaGenreDTO( mediaId,mediaType, genreIds))
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .toBodilessEntity();
 

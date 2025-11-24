@@ -23,15 +23,18 @@ import java.util.Objects;
 public class CreatorClientImpl implements ClientService {
 
     private final RestClient restClient;
+    private final Keycloak keycloak;
 
-        public CreatorClientImpl(RestClient.Builder builder) {
+        public CreatorClientImpl(RestClient.Builder builder, Keycloak keycloak) {
             this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
+            this.keycloak = keycloak;
         }
 
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
                     .uri("creator/{id}/clientcall", creatorId)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(CreatorDTO.class);
         } catch (Exception e) {
@@ -44,6 +47,7 @@ public class CreatorClientImpl implements ClientService {
         try {
             return restClient.get()
                     .uri("/mediabycreator/{creatorId}/{mediaType}", creatorId, mediaType)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<MediaDTO>>() {});
         } catch (Exception e) {
@@ -61,6 +65,7 @@ public class CreatorClientImpl implements ClientService {
                             .queryParam("mediaType", mediaType.name())
                             .queryParam("id", mediaId)
                             .build())
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<CreatorDTO>>() {
                     });
@@ -81,6 +86,7 @@ public class CreatorClientImpl implements ClientService {
             ResponseEntity<Void> response = restClient.post()
                     .uri("/media/record")
                     .body(new RegisterMediaCreatorDTO(mediaId, mediaType, creatorIds))
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .toBodilessEntity();
 

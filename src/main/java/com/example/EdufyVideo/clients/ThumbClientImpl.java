@@ -16,10 +16,12 @@ import org.springframework.web.client.RestClientResponseException;
 public class ThumbClientImpl {
 
     private final RestClient restClient;
+    private final Keycloak keycloak;
 
-    public ThumbClientImpl(RestClient.Builder builder) {
+    public ThumbClientImpl(RestClient.Builder builder, Keycloak keycloak) {
 
         this.restClient = builder.baseUrl("http://gateway:4545/api/v1/thumb").build();
+        this.keycloak = keycloak;
     }
 
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, String mediaName) {
@@ -27,6 +29,7 @@ public class ThumbClientImpl {
              ResponseEntity<Void> response= restClient.post()
                     .uri("/media/record")
                     .body(new RegisterMediaThumbDTO(mediaId,mediaType,mediaName))
+                     .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .toBodilessEntity();
 
