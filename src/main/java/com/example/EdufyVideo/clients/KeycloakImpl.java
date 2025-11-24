@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.clients;
 
 
-import com.example.EdufyVideo.models.TokenResponse;
+import com.example.EdufyVideo.models.tokens.TokenResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;

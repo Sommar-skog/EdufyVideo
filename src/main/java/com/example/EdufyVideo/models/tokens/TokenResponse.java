@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models;
+package com.example.EdufyVideo.models.tokens;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
