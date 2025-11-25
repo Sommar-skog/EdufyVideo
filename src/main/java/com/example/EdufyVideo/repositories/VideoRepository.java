@@ -36,10 +36,10 @@ public interface VideoRepository  extends JpaRepository<VideoClip, Long> {
 
     //ED-345-AA
     @Query("""
-    SELECT v FROM VideoClip v
-    LEFT JOIN FETCH v.playlistEntries pe
-    LEFT JOIN FETCH pe.playlist
-    WHERE v.id = :id
-    """)
-    VideoClip findWithPlaylists(Long id);
+        SELECT v FROM VideoClip v
+        LEFT JOIN FETCH v.playlistEntries pe
+        LEFT JOIN FETCH pe.playlist
+        WHERE v.id = :id
+        """)
+    VideoClip findWithPlaylists(@Param("id") Long id);
 }

@@ -148,6 +148,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             entry.setVideoClip(videoClip);
             entry.setPosition(position);
             playlistEntryRepository.save(entry);
+            videoClip.getPlaylistEntries().add(entry);
         }
     }
 
