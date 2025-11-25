@@ -1,9 +1,8 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.clients.CreatorClient;
-import com.example.EdufyVideo.clients.GenreClient;
+import com.example.EdufyVideo.clients.CreatorClientImpl;
+import com.example.EdufyVideo.clients.GenreClientImpl;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
-import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
@@ -18,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 
@@ -32,21 +30,21 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
 
     private final VideoRepository videoRepository;
     private final PlaylistRepository playlistRepository;
-    private final CreatorClient creatorClient;
-    private final GenreClient genreClient;
+    private final CreatorClientImpl creatorClientImpl;
+    private final GenreClientImpl genreClientImpl;
 
     @Autowired
-    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClient creatorClient, GenreClient genreClient) {
+    public VideoAggregationServiceImpl(VideoRepository videoRepository, PlaylistRepository playlistRepository, CreatorClientImpl creatorClientImpl, GenreClientImpl genreClientImpl) {
         this.videoRepository = videoRepository;
         this.playlistRepository = playlistRepository;
-        this.creatorClient = creatorClient;
-        this.genreClient = genreClient;
+        this.creatorClientImpl = creatorClientImpl;
+        this.genreClientImpl = genreClientImpl;
     }
 
     //ED-270-AA
     @Override
     public List<VideoClipResponseDTO> getVideoClipsByGenre(Long genreId) {
-        MediaByGenreDTO mediaByGenreDTO = genreClient.getVideoClipsByGenre(genreId,MediaType.VIDEO_CLIP);
+        MediaByGenreDTO mediaByGenreDTO = genreClientImpl.getVideoClipsByGenre(genreId,MediaType.VIDEO_CLIP);
 
         List<VideoClip> clips = new ArrayList<>();
         mediaByGenreDTO.getMediaIds().forEach(mediaId -> {
@@ -56,17 +54,17 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             clips.add(videoClip);
         });
 
-        return clips.stream().map(c -> VideoClipResponseMapper.toDTOUser(c, creatorClient, genreClient)).collect(Collectors.toList());
+        return clips.stream().map(c -> VideoClipResponseMapper.toDTOUser(c, creatorClientImpl, genreClientImpl)).collect(Collectors.toList());
     }
 
     //ED-61-AA
     @Override
     public VideographyResponseDTO getVideographyByCreator(Long creatorId, Authentication authentication) {
-        CreatorDTO creatorWithClips = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_CLIP);
-        CreatorDTO creatorWithPlaylists = creatorClient.getCreatorWithMediaList(creatorId, MediaType.VIDEO_PLAYLIST);
+        List<MediaDTO> clipIds = creatorClientImpl.getMediaListFromCreator(creatorId, MediaType.VIDEO_CLIP);
+        List<MediaDTO> playlistIds = creatorClientImpl.getMediaListFromCreator(creatorId, MediaType.VIDEO_PLAYLIST);
 
-        List<Long> clips = creatorWithClips.getVideoClips();
-        List<Long> playlist = creatorWithPlaylists.getVideoPlaylists();
+        List<Long> videoClipIds = clipIds.stream().map(MediaDTO::getMediaId).collect(Collectors.toList());
+        List<Long> videoPlaylistIds = playlistIds.stream().map(MediaDTO::getMediaId).collect(Collectors.toList());
 
         List<VideoClip> videos;
         List<VideoPlaylist> playlists;
@@ -76,27 +74,27 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
 
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_user"))){
-            videos = getActiveMediaList(clips, videoRepository, VideoClip::isActive);
-            playlists = getActiveMediaList(playlist, playlistRepository, VideoPlaylist::isActive);
+            videos = getActiveMediaList(videoClipIds, videoRepository, VideoClip::isActive);
+            playlists = getActiveMediaList(videoPlaylistIds, playlistRepository, VideoPlaylist::isActive);
             clipDTOs = videos.stream()
-                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClient, genreClient))
+                    .map(clip -> VideoClipResponseMapper.toDTOUser(clip, creatorClientImpl, genreClientImpl))
                     .toList();
 
             playlistDTOs = playlists.stream()
-                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoUser(pl, creatorClient))
+                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoUser(pl, creatorClientImpl))
                     .toList();
         }
 
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
-            videos = getAllMediaList(clips, videoRepository);
-            playlists = getAllMediaList(playlist, playlistRepository);
+            videos = getAllMediaList(videoClipIds, videoRepository);
+            playlists = getAllMediaList(videoPlaylistIds, playlistRepository);
 
            clipDTOs = videos.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClientImpl, genreClientImpl))
                     .toList();
 
            playlistDTOs = playlists.stream()
-                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoAdmin(pl, creatorClient))
+                    .map(pl -> VideoPlaylistResponseMapper.toSimpleDtoAdmin(pl, creatorClientImpl))
                     .toList();
         }
         return new VideographyResponseDTO(clipDTOs, playlistDTOs);

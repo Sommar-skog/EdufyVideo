@@ -3,8 +3,8 @@ package com.example.EdufyVideo.clients;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
+import com.example.EdufyVideo.models.dtos.MediaDTO;
 import com.example.EdufyVideo.models.dtos.RegisterMediaCreatorDTO;
-import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -20,32 +20,42 @@ import java.util.Objects;
 
 //ED-61-AA
 @Service
-public class CreatorClient {
+public class CreatorClientImpl implements ClientService {
 
     private final RestClient restClient;
+    private final Keycloak keycloak;
 
-    public CreatorClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
-    }
+        public CreatorClientImpl(RestClient.Builder builder, Keycloak keycloak) {
+            this.restClient = builder.baseUrl("http://gateway:4545/api/v1/creator").build();
+            this.keycloak = keycloak;
+        }
 
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
-                    .uri("/creator/{id}", creatorId)
+                    .uri("/creator/{id}/clientcall", creatorId)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(CreatorDTO.class);
-        } catch (Exception e) {
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Creator-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Creators at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
 
-    //ED-61-AA (Get CreatorDTO with creator ID and a list of MeidaIds
-    public CreatorDTO getCreatorWithMediaList(Long creatorId, MediaType mediaType) {
+    //ED-61-AA //Get list of DTOs with just mediaId //ED-345-AA
+    public List<MediaDTO> getMediaListFromCreator(Long creatorId, MediaType mediaType) {
         try {
             return restClient.get()
-                    .uri("/creator/{mediaType}/{id}", mediaType, creatorId)
+                    .uri("/mediabycreator/{creatorId}/{mediaType}", creatorId, mediaType)
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
-                    .body(CreatorDTO.class);
+                    .body(new ParameterizedTypeReference<List<MediaDTO>>() {});
         } catch (Exception e) {
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
@@ -53,17 +63,25 @@ public class CreatorClient {
 
 
     public List<CreatorDTO> getCreatorsByMediaTypeAndMediaId(MediaType mediaType, long mediaId) {
+        System.out.println(mediaId  +" "+mediaType.name());
         try {
             return restClient.get()
                     .uri(uriBuilder -> uriBuilder
-                            .path("/creator/creators-media")
+                            .path("/creators-mediaid")
                             .queryParam("mediaType", mediaType.name())
-                            .queryParam("mediaId", mediaId)
+                            .queryParam("id", mediaId)
                             .build())
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(new ParameterizedTypeReference<List<CreatorDTO>>() {
                     });
-        } catch (Exception e) {
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Creator-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Creators at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
@@ -71,13 +89,14 @@ public class CreatorClient {
     //ED-243-AA
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> creatorIds) {
         try {
-            ResponseEntity<Void> response = restClient.post()
+            ResponseEntity<Void> response = restClient.put()
                     .uri("/media/record")
                     .body(new RegisterMediaCreatorDTO(mediaId, mediaType, creatorIds))
+                    .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .toBodilessEntity();
 
-            return response.getStatusCode() == HttpStatus.CREATED;
+            return response.getStatusCode() == HttpStatus.OK;
 
         } catch (RestClientResponseException ex) {
             // Client Call returns 400/404/409/500
@@ -85,7 +104,7 @@ public class CreatorClient {
             throw new InvalidInputException("Creator-service error: " + error);
 
         } catch (ResourceAccessException ex) {
-            //Can not reach Thumb at all
+            //Can not reach Creator at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
@@ -96,7 +115,7 @@ public class CreatorClient {
             List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
 
             if (creators == null || creators.isEmpty()) {
-                return List.of("CREATOR UNKNOWN");
+                return List.of("CREATOR UNKNOWN ");
             }
 
             return creators.stream()
@@ -105,7 +124,7 @@ public class CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN");
+            return List.of("CREATOR UNKNOWN " + e.getMessage());
         }
     }
 
@@ -113,6 +132,7 @@ public class CreatorClient {
     public List<String> getCreatorIdAndUsernameByMedia(MediaType mediaType, long mediaId) {
         try {
             List<CreatorDTO> creators = getCreatorsByMediaTypeAndMediaId(mediaType, mediaId);
+            System.out.println(creators);
 
             if (creators == null || creators.isEmpty()) {
                 return List.of("CREATOR UNKNOWN");
@@ -124,7 +144,7 @@ public class CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN");
+            return List.of("CREATOR UNKNOWN" + e.getMessage());
         }
     }
 

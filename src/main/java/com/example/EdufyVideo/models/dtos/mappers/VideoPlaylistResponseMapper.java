@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.models.dtos.mappers;
 
-import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.CreatorClientImpl;
 import com.example.EdufyVideo.models.dtos.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 //ED-79-AA
 public class VideoPlaylistResponseMapper {
 
-    public static VideoPlaylistResponseDTO toDtoAdmin(VideoPlaylist videoPlaylist, CreatorClient creatorClient) {
+    public static VideoPlaylistResponseDTO toDtoAdmin(VideoPlaylist videoPlaylist, CreatorClientImpl creatorClientImpl) {
         List<VideoClipInfoDTO> videoClipEntries = getVideoClipEntries(videoPlaylist);
 
         VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
         dto.setId(videoPlaylist.getId());
         dto.setTitle(videoPlaylist.getTitle());
-        dto.setCreatorUsernames(creatorClient.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
+        dto.setCreatorUsernames(creatorClientImpl.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
         dto.setDescription(videoPlaylist.getDescription());
         dto.setUrl(videoPlaylist.getUrl());
         dto.setCreationDate(videoPlaylist.getCreationDate());
@@ -32,11 +32,11 @@ public class VideoPlaylistResponseMapper {
         return dto;
     }
 
-    public static VideoPlaylistResponseDTO toSimpleDtoAdmin(VideoPlaylist videoPlaylist, CreatorClient creatorClient) {
+    public static VideoPlaylistResponseDTO toSimpleDtoAdmin(VideoPlaylist videoPlaylist, CreatorClientImpl creatorClientImpl) {
         VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
         dto.setId(videoPlaylist.getId());
         dto.setTitle(videoPlaylist.getTitle());
-        dto.setCreatorUsernames(creatorClient.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
+        dto.setCreatorUsernames(creatorClientImpl.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
         dto.setDescription(videoPlaylist.getDescription());
         dto.setUrl(videoPlaylist.getUrl());
         dto.setCreationDate(videoPlaylist.getCreationDate());
@@ -45,12 +45,12 @@ public class VideoPlaylistResponseMapper {
         return dto;
     }
 
-    public static VideoPlaylistResponseDTO toDtoUser(VideoPlaylist videoPlaylist, CreatorClient creatorClient) {
+    public static VideoPlaylistResponseDTO toDtoUser(VideoPlaylist videoPlaylist, CreatorClientImpl creatorClientImpl) {
         List<VideoClipInfoDTO> videoClipEntries = getVideoClipEntries(videoPlaylist);
 
         VideoPlaylistResponseDTO dto = new VideoPlaylistResponseDTO();
         dto.setTitle(videoPlaylist.getTitle());
-        dto.setCreatorUsernames(creatorClient.getCreatorUsernamesByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
+        dto.setCreatorUsernames(creatorClientImpl.getCreatorUsernamesByMedia(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId()));
         dto.setDescription(videoPlaylist.getDescription());
         dto.setUrl(videoPlaylist.getUrl());
         dto.setCreationDate(videoPlaylist.getCreationDate());
@@ -59,8 +59,8 @@ public class VideoPlaylistResponseMapper {
         return dto;
     }
 
-    public static VideoPlaylistResponseDTO toSimpleDtoUser(VideoPlaylist videoPlaylist, CreatorClient creatorClient) {
-        List<String> usernames = creatorClient
+    public static VideoPlaylistResponseDTO toSimpleDtoUser(VideoPlaylist videoPlaylist, CreatorClientImpl creatorClientImpl) {
+        List<String> usernames = creatorClientImpl
                 .getCreatorsByMediaTypeAndMediaId(MediaType.VIDEO_PLAYLIST, videoPlaylist.getId())
                 .stream()
                 .map(CreatorDTO::getUsername)

@@ -1,19 +1,16 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.clients.CreatorClient;
-import com.example.EdufyVideo.clients.GenreClient;
-import com.example.EdufyVideo.clients.ThumbClient;
-import com.example.EdufyVideo.clients.UserClient;
+import com.example.EdufyVideo.clients.CreatorClientImpl;
+import com.example.EdufyVideo.clients.GenreClientImpl;
+import com.example.EdufyVideo.clients.ThumbClientImpl;
+import com.example.EdufyVideo.clients.UserClientImpl;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.*;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
-import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
-import com.example.EdufyVideo.repositories.PlaylistEntryRepository;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import jakarta.transaction.Transactional;
@@ -36,24 +33,24 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-78-AA
     private final VideoRepository videoRepository;
-    private final CreatorClient creatorClient;
-    private final GenreClient genreClient;
-    private final UserClient userClient;
-    private final ThumbClient thumbClient; //ED-243-AA
+    private final CreatorClientImpl creatorClientImpl;
+    private final GenreClientImpl genreClientImpl;
+    private final UserClientImpl userClientImpl;
+    private final ThumbClientImpl thumbClientImpl; //ED-243-AA
     private final PlaylistRepository playlistRepository; //ED-243-AA;
     private final PlaylistService playlistService;
 
 
     //ED-78-AA
     @Autowired
-    public VideoServiceImpl(VideoRepository videoRepository, CreatorClient creatorClient, GenreClient genreClient, UserClient userClient, PlaylistRepository playlistRepository, PlaylistService playlistService, ThumbClient thumbClient) {
+    public VideoServiceImpl(VideoRepository videoRepository, CreatorClientImpl creatorClientImpl, GenreClientImpl genreClientImpl, UserClientImpl userClientImpl, PlaylistRepository playlistRepository, PlaylistService playlistService, ThumbClientImpl thumbClientImpl) {
         this.videoRepository = videoRepository;
-        this.creatorClient = creatorClient;
-        this.genreClient = genreClient;
-        this.userClient = userClient;
+        this.creatorClientImpl = creatorClientImpl;
+        this.genreClientImpl = genreClientImpl;
+        this.userClientImpl = userClientImpl;
         this.playlistRepository = playlistRepository;
         this.playlistService = playlistService;
-        this.thumbClient = thumbClient;
+        this.thumbClientImpl = thumbClientImpl;
     }
 
     //ED-78-AA
@@ -65,11 +62,11 @@ public class VideoServiceImpl implements VideoService {
         if(roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             video = videoRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOAdmin(video, creatorClient, genreClient);
+            return VideoClipResponseMapper.toDTOAdmin(video, creatorClientImpl, genreClientImpl);
         } else{
             video = videoRepository.findVideoClipByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoClip", "id", id));
-            return VideoClipResponseMapper.toDTOUser(video, creatorClient, genreClient);
+            return VideoClipResponseMapper.toDTOUser(video, creatorClientImpl, genreClientImpl);
         }
     }
 
@@ -83,7 +80,7 @@ public class VideoServiceImpl implements VideoService {
         }
 
         return videoClips.stream()
-                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
+                .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClientImpl, genreClientImpl))
                 .collect(Collectors.toList());
     }
 
@@ -95,12 +92,12 @@ public class VideoServiceImpl implements VideoService {
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             videoClips = videoRepository.findAll();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClient, genreClient))
+                    .map(v -> VideoClipResponseMapper.toDTOAdmin(v, creatorClientImpl, genreClientImpl))
                     .collect(Collectors.toList());
         } else{
             videoClips = videoRepository.findAllByActiveTrue();
             return videoClips.stream()
-                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClient, genreClient))
+                    .map(v -> VideoClipResponseMapper.toDTOUser(v, creatorClientImpl, genreClientImpl))
                     .collect(Collectors.toList());
         }
     }
@@ -108,10 +105,10 @@ public class VideoServiceImpl implements VideoService {
     //ED-255-AA
     @Override
     public PlayedDTO playVideoClip(Long videoClipId, Authentication authentication) {
-        UserDTO user = userClient.getUserBySub(authentication.getName());
+        UserDTO user = userClientImpl.getUserBySub(authentication.getName());
 
         if (user.getId() == null){
-            throw new ResourceNotFoundException("UserClient returned id null");
+            throw new ResourceNotFoundException("UserClientImpl returned id null");
         }
 
         VideoClip clip = videoRepository.findVideoClipByIdAndActiveTrue(videoClipId).orElseThrow(
@@ -146,8 +143,6 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @Transactional//ED-244-AA
     public VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO) {
-        List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
-        List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
         validateVideoClipData(addVideoClipDTO);
 
         VideoClip videoClip = new VideoClip(
@@ -159,14 +154,17 @@ public class VideoServiceImpl implements VideoService {
        VideoClip savedClip = videoRepository.save(videoClip);
 
         if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
-                playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+            playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
         }
 
-        genreClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
-        thumbClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
-        creatorClient.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
+        genreClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
+        thumbClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
+        creatorClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
-        return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClient, genreClient);
+
+        VideoClip reloaded = videoRepository.findWithPlaylists(savedClip.getId());
+
+        return VideoClipResponseMapper.toDTOAdmin(reloaded, creatorClientImpl, genreClientImpl);
     }
 
     //ED-243-AA
@@ -218,7 +216,6 @@ public class VideoServiceImpl implements VideoService {
                 }
             }
         }
-
         validateUniqueUrl(trimmedUrl);
     }
 
@@ -227,54 +224,5 @@ public class VideoServiceImpl implements VideoService {
         if (videoRepository.existsByUrl(url)) {
             throw new UniqueConflictException("url", url);
         }
-    }
-
-    //ED-243-AA
-    private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
-        if (creatorIds == null) {
-            throw new InvalidInputException("Creator list cannot be null");
-        }
-        if (creatorIds.isEmpty()) {
-            throw new InvalidInputException("Creator list cannot be empty");
-        }
-        if (creatorIds.contains(null)) {
-            throw new InvalidInputException("Creator list contains null value");
-        }
-
-        List<CreatorDTO> creators = new ArrayList<>();
-
-        creatorIds.forEach(id -> {
-            try {
-                CreatorDTO creator = creatorClient.getCreatorById(id);
-                creators.add(creator);
-            } catch (RestClientResponseException ex) {
-                throw new ResourceNotFoundException("Creator", "id", id);
-            }
-        });
-        return creators;
-    }
-
-    //ED-243-AA
-    private List<GenreDTO> validateGenres(List<Long> genreIds) {
-        if (genreIds == null) {
-            throw new InvalidInputException("Genre list cannot be null");
-        }
-        if (genreIds.isEmpty()) {
-            throw new InvalidInputException("Genre list cannot be empty");
-        }
-        if (genreIds.contains(null)) {
-            throw new InvalidInputException("Genre list contains null value");
-        }
-
-        List<GenreDTO> genres = new ArrayList<>();
-        genreIds.forEach(id -> {
-            try {
-                GenreDTO genre = genreClient.getGenreById(id);
-                genres.add(genre);
-            } catch (RestClientResponseException ex) {
-                throw new ResourceNotFoundException("Genre", "id", id);
-            }
-        });
-        return genres;
     }
 }

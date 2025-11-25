@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.CreatorClientImpl;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
@@ -33,16 +33,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistEntryRepository playlistEntryRepository; //ED-315-AA
     private final VideoRepository videoRepository;
-    private final CreatorClient creatorClient;
+    private final CreatorClientImpl creatorClientImpl;
 
 
     //ED-79-AA
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, VideoRepository videoRepository, CreatorClient creatorClient) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, VideoRepository videoRepository, CreatorClientImpl creatorClientImpl) {
         this.playlistRepository = playlistRepository;
         this.playlistEntryRepository = playlistEntryRepository;
         this.videoRepository = videoRepository;
-        this.creatorClient = creatorClient;
+        this.creatorClientImpl = creatorClientImpl;
     }
 
 
@@ -55,11 +55,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             playlist = playlistRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoPlaylist", "id", id));
-            return VideoPlaylistResponseMapper.toDtoAdmin(playlist, creatorClient);
+            return VideoPlaylistResponseMapper.toDtoAdmin(playlist, creatorClientImpl);
         } else {
             playlist = playlistRepository.findByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoPlaylist", "id", id));
-            return VideoPlaylistResponseMapper.toDtoUser(playlist, creatorClient);
+            return VideoPlaylistResponseMapper.toDtoUser(playlist, creatorClientImpl);
         }
     }
 
@@ -73,7 +73,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
 
         return playlists.stream()
-                .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
+                .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClientImpl))
                 .collect(Collectors.toList());
     }
 
@@ -85,12 +85,12 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))) {
             playlists = playlistRepository.findAll();
             return playlists.stream()
-                    .map(v -> VideoPlaylistResponseMapper.toDtoAdmin(v, creatorClient))
+                    .map(v -> VideoPlaylistResponseMapper.toDtoAdmin(v, creatorClientImpl))
                     .collect(Collectors.toList());
         } else {
             playlists = playlistRepository.findAllByActiveTrue();
             return playlists.stream()
-                    .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
+                    .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClientImpl))
                     .collect(Collectors.toList());
         }
     }
@@ -99,8 +99,6 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public VideoPlaylistResponseDTO addPlaylist(AddPlaylistDTO addPlaylistDTO) {
-        List<CreatorDTO> creators = validateCreators(addPlaylistDTO.getCreatorIds());
-
         validatePlaylistData(addPlaylistDTO);
 
         VideoPlaylist playlist = new VideoPlaylist(
@@ -111,8 +109,8 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         VideoPlaylist savedPlaylist = playlistRepository.save(playlist);
 
-        creatorClient.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
-        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClient);
+        creatorClientImpl.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClientImpl);
     }
 
     //ED-315-AA
@@ -129,8 +127,10 @@ public class PlaylistServiceImpl implements PlaylistService {
             );
             addVideoClipToPlaylists(List.of(playlistId),videoClip);
         }
+        playlistRepository.save(playlist);
 
-        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClient);
+
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClientImpl);
     }
 
     //ED-315-AA (changed from videoservice to playlist service)
@@ -148,6 +148,7 @@ public class PlaylistServiceImpl implements PlaylistService {
             entry.setVideoClip(videoClip);
             entry.setPosition(position);
             playlistEntryRepository.save(entry);
+            videoClip.getPlaylistEntries().add(entry);
         }
     }
 
@@ -183,30 +184,4 @@ public class PlaylistServiceImpl implements PlaylistService {
             throw new UniqueConflictException("url", url);
         }
     }
-
-    //ED-244-AA
-    private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
-        if (creatorIds == null) {
-            throw new InvalidInputException("Creator list cannot be null");
-        }
-        if (creatorIds.isEmpty()) {
-            throw new InvalidInputException("Creator list cannot be empty");
-        }
-        if (creatorIds.contains(null)) {
-            throw new InvalidInputException("Creator list contains null value");
-        }
-        List<CreatorDTO> creators = new ArrayList<>();
-
-        creatorIds.forEach(id -> {
-            try{
-                CreatorDTO creator = creatorClient.getCreatorById(id);
-                creators.add(creator);
-            } catch (RestClientResponseException e) {
-                throw new ResourceNotFoundException("Creator", "id", id);
-            }
-        });
-        return creators;
-    }
-
-
 }
