@@ -83,14 +83,14 @@ public class CreatorClientImpl implements ClientService {
     //ED-243-AA
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, List<Long> creatorIds) {
         try {
-            ResponseEntity<Void> response = restClient.post()
+            ResponseEntity<Void> response = restClient.put()
                     .uri("/media/record")
                     .body(new RegisterMediaCreatorDTO(mediaId, mediaType, creatorIds))
                     .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .toBodilessEntity();
 
-            return response.getStatusCode() == HttpStatus.CREATED;
+            return response.getStatusCode() == HttpStatus.OK;
 
         } catch (RestClientResponseException ex) {
             // Client Call returns 400/404/409/500
