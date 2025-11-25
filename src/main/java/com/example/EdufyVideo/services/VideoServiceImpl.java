@@ -143,8 +143,6 @@ public class VideoServiceImpl implements VideoService {
     @Override
     @Transactional//ED-244-AA
     public VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO) {
-        List<CreatorDTO> creators = validateCreators(addVideoClipDTO.getCreatorIds());
-        List<GenreDTO> genres = validateGenres(addVideoClipDTO.getGenreIds());
         validateVideoClipData(addVideoClipDTO);
 
         VideoClip videoClip = new VideoClip(
@@ -215,7 +213,6 @@ public class VideoServiceImpl implements VideoService {
                 }
             }
         }
-
         validateUniqueUrl(trimmedUrl);
     }
 
@@ -224,54 +221,5 @@ public class VideoServiceImpl implements VideoService {
         if (videoRepository.existsByUrl(url)) {
             throw new UniqueConflictException("url", url);
         }
-    }
-
-    //ED-243-AA
-    private List<CreatorDTO> validateCreators(List<Long> creatorIds) {
-        if (creatorIds == null) {
-            throw new InvalidInputException("Creator list cannot be null");
-        }
-        if (creatorIds.isEmpty()) {
-            throw new InvalidInputException("Creator list cannot be empty");
-        }
-        if (creatorIds.contains(null)) {
-            throw new InvalidInputException("Creator list contains null value");
-        }
-
-        List<CreatorDTO> creators = new ArrayList<>();
-
-        creatorIds.forEach(id -> {
-            try {
-                CreatorDTO creator = creatorClientImpl.getCreatorById(id);
-                creators.add(creator);
-            } catch (RestClientResponseException ex) {
-                throw new ResourceNotFoundException("Creator", "id", id);
-            }
-        });
-        return creators;
-    }
-
-    //ED-243-AA
-    private List<GenreDTO> validateGenres(List<Long> genreIds) {
-        if (genreIds == null) {
-            throw new InvalidInputException("Genre list cannot be null");
-        }
-        if (genreIds.isEmpty()) {
-            throw new InvalidInputException("Genre list cannot be empty");
-        }
-        if (genreIds.contains(null)) {
-            throw new InvalidInputException("Genre list contains null value");
-        }
-
-        List<GenreDTO> genres = new ArrayList<>();
-        genreIds.forEach(id -> {
-            try {
-                GenreDTO genre = genreClientImpl.getGenreById(id);
-                genres.add(genre);
-            } catch (RestClientResponseException ex) {
-                throw new ResourceNotFoundException("Genre", "id", id);
-            }
-        });
-        return genres;
     }
 }

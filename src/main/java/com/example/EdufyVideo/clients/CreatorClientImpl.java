@@ -33,11 +33,17 @@ public class CreatorClientImpl implements ClientService {
     public CreatorDTO getCreatorById(Long creatorId) {
         try {
             return restClient.get()
-                    .uri("creator/{id}/clientcall", creatorId)
+                    .uri("/creator/{id}/clientcall", creatorId)
                     .header("Authorization", "Bearer " + keycloak.getAccessToken())
                     .retrieve()
                     .body(CreatorDTO.class);
-        } catch (Exception e) {
+        } catch (RestClientResponseException ex) {
+            // Client Call returns 400/404/409/500
+            String error = ex.getResponseBodyAsString();
+            throw new InvalidInputException("Creator-service error: " + error);
+
+        } catch (ResourceAccessException ex) {
+            //Can not reach Creators at all
             throw new RestClientException("EdufyVideo", "EdufyCreator");
         }
     }
