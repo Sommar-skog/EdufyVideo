@@ -127,6 +127,8 @@ public class PlaylistServiceImpl implements PlaylistService {
             );
             addVideoClipToPlaylists(List.of(playlistId),videoClip);
         }
+        playlistRepository.save(playlist);
+
 
         return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClientImpl);
     }

@@ -154,14 +154,18 @@ public class VideoServiceImpl implements VideoService {
        VideoClip savedClip = videoRepository.save(videoClip);
 
         if (addVideoClipDTO.getPlaylistIds() != null && !addVideoClipDTO.getPlaylistIds().isEmpty()) {
-                playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
+            playlistService.addVideoClipToPlaylists(addVideoClipDTO.getPlaylistIds(), savedClip);
         }
 
         genreClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getGenreIds());
         thumbClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
         creatorClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
-        return VideoClipResponseMapper.toDTOAdmin(videoClip, creatorClientImpl, genreClientImpl);
+        VideoClip reloaded = videoRepository.findById(savedClip.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("VideoClip", "id", savedClip.getId()));
+
+
+        return VideoClipResponseMapper.toDTOAdmin(reloaded, creatorClientImpl, genreClientImpl);
     }
 
     //ED-243-AA
