@@ -161,9 +161,8 @@ public class VideoServiceImpl implements VideoService {
         thumbClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), savedClip.getTitle());
         creatorClientImpl.createRecordeOfMedia(MediaType.VIDEO_CLIP, savedClip.getId(), addVideoClipDTO.getCreatorIds());
 
-        VideoClip reloaded = videoRepository.findById(savedClip.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("VideoClip", "id", savedClip.getId()));
 
+        VideoClip reloaded = videoRepository.findWithPlaylists(savedClip.getId());
 
         return VideoClipResponseMapper.toDTOAdmin(reloaded, creatorClientImpl, genreClientImpl);
     }
