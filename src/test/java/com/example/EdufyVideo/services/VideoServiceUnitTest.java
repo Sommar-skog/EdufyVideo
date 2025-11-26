@@ -2,7 +2,6 @@ package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.*;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
-import com.example.EdufyVideo.models.dtos.AddPlaylistDTO;
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
@@ -14,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -89,14 +88,17 @@ class VideoServiceUnitTest {
         Collection<GrantedAuthority> roles = List.of(() -> "ROLE_video_admin");
 
         when(mockVideoRepository.findById(1L)).thenReturn(Optional.of(video));
-        mockStatic(VideoClipResponseMapper.class).when(
-                () -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient)
-        ).thenReturn(videoResponseDTO);
 
-        VideoClipResponseDTO result = videoService.getVideoClipById(1L, roles);
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(VideoClipResponseMapper.class)) {
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
 
-        assertEquals(videoResponseDTO, result);
-        verify(mockVideoRepository).findById(1L);
+            VideoClipResponseDTO result = videoService.getVideoClipById(1L, roles);
+
+            assertEquals(videoResponseDTO, result);
+            verify(mockVideoRepository).findById(1L);
+        }
 
     }
 
@@ -112,23 +114,81 @@ class VideoServiceUnitTest {
         assertEquals("VideoClip not found with id: -1", exception.getMessage());
 
         verify(mockVideoRepository).findById(-1L);
-
-
     }
 
     @Test
     void getVideoClipByIdShouldReturnUserDtoWhenRoleIsUser(){
+        Collection<GrantedAuthority> roles = List.of(() -> "ROLE_video_user");
 
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L)).thenReturn(Optional.of(video));
+
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper =
+                     mockStatic(VideoClipResponseMapper.class)) {
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOUser(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            VideoClipResponseDTO result = videoService.getVideoClipById(1L, roles);
+
+            assertEquals(videoResponseDTO, result);
+            verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+        }
     }
 
     @Test
     void getVideoClipByIdShouldThrowWhenUserVideoNotFound(){
+        Collection<GrantedAuthority> roles = List.of(() -> "ROLE_video_user");
 
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(-1L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                videoService.getVideoClipById(-1L, roles));
+
+        assertEquals("VideoClip not found with id: -1", exception.getMessage());
+
+        verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(-1L);
     }
 
     @Test
-    void getVideoClipByIdShouldUseCorrectRepositoryMethodDependingOnRole(){
+    void getVideoClipByIdShouldUseFindByIdForAdminRole() {
+        Collection<GrantedAuthority> roles = List.of(() -> "ROLE_video_admin");
 
+        when(mockVideoRepository.findById(1L)).thenReturn(Optional.of(video));
+
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper =
+                     mockStatic(VideoClipResponseMapper.class)) {
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            videoService.getVideoClipById(1L, roles);
+
+            verify(mockVideoRepository).findById(1L);
+            verify(mockVideoRepository, never()).findVideoClipByIdAndActiveTrue(any());
+        }
+    }
+
+    @Test
+    void getVideoClipByIdShouldUseFindActiveForUserRole() {
+        Collection<GrantedAuthority> roles = List.of(() -> "ROLE_video_user");
+
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L))
+                .thenReturn(Optional.of(video));
+
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper =
+                     mockStatic(VideoClipResponseMapper.class)) {
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOUser(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            videoService.getVideoClipById(1L, roles);
+
+            verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+            verify(mockVideoRepository, never()).findById(any());
+        }
     }
 
 
