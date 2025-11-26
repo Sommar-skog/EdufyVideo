@@ -191,9 +191,40 @@ class VideoServiceUnitTest {
         }
     }
 
+    @Test
+    void getVideoClipsByTitleShouldReturnListOfDtos() {
+        String title = "Test";
+
+        when(mockVideoRepository.findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title)).thenReturn(List.of(video));
+
+        try(MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(
+                VideoClipResponseMapper.class)){
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOUser(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            List<VideoClipResponseDTO> result = videoService.getVideoClipsByTitle(title);
+
+            assertEquals(1, result.size());
+            assertEquals(videoResponseDTO, result.get(0));
+
+            verify(mockVideoRepository).findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title);
+        }
+    }
 
     @Test
-    void getVideoClipsByTitle() {
+    void getVideoClipsByTitleShouldThrowWhenNoVideosFound(){
+
+        when(mockVideoRepository.findVideoClipByTitleContainingIgnoreCaseAndActiveTrue("test")).thenReturn(List.of());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                videoService.getVideoClipsByTitle("test"));
+
+        assertEquals("VideoClip not found with title containing: test", exception.getMessage());
+
+        verifyNoInteractions(mockCreatorClient, mockGenreClient);
+        verify(mockVideoRepository).findVideoClipByTitleContainingIgnoreCaseAndActiveTrue("test");
     }
 
     @Test
