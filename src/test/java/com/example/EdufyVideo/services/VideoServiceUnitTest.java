@@ -15,7 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
 import java.time.LocalDate;
@@ -228,7 +230,83 @@ class VideoServiceUnitTest {
     }
 
     @Test
-    void getAllVideoClips() {
+    void getAllVideoClipsShouldReturnAdminDtosWhenRoleIsAdmin() {
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_admin"))).when(auth).getAuthorities();
+
+        when(mockVideoRepository.findAll()).thenReturn(List.of(video));
+
+        try(MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(
+                VideoClipResponseMapper.class)) {
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            List<VideoClipResponseDTO> result = videoService.getAllVideoClips(auth);
+
+            assertEquals(1, result.size());
+            assertEquals(videoResponseDTO, result.getFirst());
+
+            verify(mockVideoRepository).findAll();
+            verify(mockVideoRepository, never()).findAllByActiveTrue();
+        }
+
+    }
+
+    @Test
+    void getAllVideoClipsShouldReturnEmptyListWhenRepositoryReturnsEmptyListForAdmin(){
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_admin"))).when(auth).getAuthorities();
+
+        when(mockVideoRepository.findAll()).thenReturn(List.of());
+
+        List<VideoClipResponseDTO> result = videoService.getAllVideoClips(auth);
+
+        assertEquals(0, result.size());
+        verifyNoInteractions(mockCreatorClient, mockGenreClient);
+        verify(mockVideoRepository).findAll();
+        verify(mockVideoRepository, never()).findAllByActiveTrue();
+    }
+
+    @Test
+    void getAllVideoClipsShouldReturnUserDtosWhenRoleIsUser(){
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
+
+        when(mockVideoRepository.findAllByActiveTrue()).thenReturn(List.of(video));
+
+        try(MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(
+                VideoClipResponseMapper.class)) {
+
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOUser(video, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            List<VideoClipResponseDTO> result = videoService.getAllVideoClips(auth);
+
+            assertEquals(1, result.size());
+            assertEquals(videoResponseDTO, result.getFirst());
+
+            verify(mockVideoRepository).findAllByActiveTrue();
+            verify(mockVideoRepository, never()).findAll();
+        }
+    }
+
+    @Test
+    void getAllVideoClipsShouldReturnEmptyListWhenRepositoryReturnsEmptyListForUser(){
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
+
+        when(mockVideoRepository.findAllByActiveTrue()).thenReturn(List.of());
+
+        List<VideoClipResponseDTO> result = videoService.getAllVideoClips(auth);
+
+        assertEquals(0, result.size());
+        verifyNoInteractions(mockCreatorClient, mockGenreClient);
+        verify(mockVideoRepository).findAllByActiveTrue();
+        verify(mockVideoRepository, never()).findAll();
+
     }
 
     @Test
