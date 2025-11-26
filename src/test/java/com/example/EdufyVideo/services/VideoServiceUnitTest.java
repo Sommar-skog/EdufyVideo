@@ -43,11 +43,11 @@ class VideoServiceUnitTest {
                 "Test title",
                 "Test Description",
                 List.of(1L,2L),
-                LocalTime.of(00:10:32),
+                "http://test.com",
+                LocalTime.of(0,10,32),
                 List.of(1L,2L),
                 List.of(1L)
         );
-
     }
 
 
