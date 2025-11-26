@@ -7,7 +7,7 @@ import com.example.EdufyVideo.models.enums.MediaType;
 import java.util.List;
 
 //ED-345-AA
-public interface ClientService {
+public interface CreatorClient {
     CreatorDTO getCreatorById(Long creatorId);
     List<MediaDTO> getMediaListFromCreator(Long creatorId, MediaType mediaType);
     List<CreatorDTO> getCreatorsByMediaTypeAndMediaId(MediaType mediaType, long mediaId);

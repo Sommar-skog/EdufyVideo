@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.clients.CreatorClientImpl;
+import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientResponseException;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,16 +31,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistEntryRepository playlistEntryRepository; //ED-315-AA
     private final VideoRepository videoRepository;
-    private final CreatorClientImpl creatorClientImpl;
+    private final CreatorClient creatorClient;
 
 
     //ED-79-AA
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, VideoRepository videoRepository, CreatorClientImpl creatorClientImpl) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository,PlaylistEntryRepository playlistEntryRepository, VideoRepository videoRepository, CreatorClient creatorClient) {
         this.playlistRepository = playlistRepository;
         this.playlistEntryRepository = playlistEntryRepository;
         this.videoRepository = videoRepository;
-        this.creatorClientImpl = creatorClientImpl;
+        this.creatorClient = creatorClient;
     }
 
 
@@ -55,11 +53,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))){
             playlist = playlistRepository.findById(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoPlaylist", "id", id));
-            return VideoPlaylistResponseMapper.toDtoAdmin(playlist, creatorClientImpl);
+            return VideoPlaylistResponseMapper.toDtoAdmin(playlist, creatorClient);
         } else {
             playlist = playlistRepository.findByIdAndActiveTrue(id).orElseThrow(() ->
                     new ResourceNotFoundException("VideoPlaylist", "id", id));
-            return VideoPlaylistResponseMapper.toDtoUser(playlist, creatorClientImpl);
+            return VideoPlaylistResponseMapper.toDtoUser(playlist, creatorClient);
         }
     }
 
@@ -73,7 +71,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
 
         return playlists.stream()
-                .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClientImpl))
+                .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
                 .collect(Collectors.toList());
     }
 
@@ -85,12 +83,12 @@ public class PlaylistServiceImpl implements PlaylistService {
         if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_video_admin"))) {
             playlists = playlistRepository.findAll();
             return playlists.stream()
-                    .map(v -> VideoPlaylistResponseMapper.toDtoAdmin(v, creatorClientImpl))
+                    .map(v -> VideoPlaylistResponseMapper.toDtoAdmin(v, creatorClient))
                     .collect(Collectors.toList());
         } else {
             playlists = playlistRepository.findAllByActiveTrue();
             return playlists.stream()
-                    .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClientImpl))
+                    .map(v -> VideoPlaylistResponseMapper.toDtoUser(v, creatorClient))
                     .collect(Collectors.toList());
         }
     }
@@ -109,8 +107,8 @@ public class PlaylistServiceImpl implements PlaylistService {
 
         VideoPlaylist savedPlaylist = playlistRepository.save(playlist);
 
-        creatorClientImpl.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
-        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClientImpl);
+        creatorClient.createRecordeOfMedia(MediaType.VIDEO_PLAYLIST, savedPlaylist.getId(), addPlaylistDTO.getCreatorIds());
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(savedPlaylist, creatorClient);
     }
 
     //ED-315-AA
@@ -130,7 +128,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlistRepository.save(playlist);
 
 
-        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClientImpl);
+        return VideoPlaylistResponseMapper.toSimpleDtoAdmin(playlist, creatorClient);
     }
 
     //ED-315-AA (changed from videoservice to playlist service)

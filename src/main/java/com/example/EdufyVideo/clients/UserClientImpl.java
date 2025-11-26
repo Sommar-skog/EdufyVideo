@@ -7,7 +7,7 @@ import org.springframework.web.client.RestClient;
 
 //ED-282-AA
 @Service
-public class UserClientImpl {
+public class UserClientImpl implements UserClient {
 
     private final RestClient restClient;
     private final Keycloak keycloak;

@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 //ED-243-AA
 @Service
-public class ThumbClientImpl {
+public class ThumbClientImpl implements ThumbClient {
 
     private final RestClient restClient;
     private final Keycloak keycloak;
