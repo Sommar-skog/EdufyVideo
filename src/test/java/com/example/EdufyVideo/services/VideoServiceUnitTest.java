@@ -1,14 +1,18 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.clients.CreatorClientImpl;
-import com.example.EdufyVideo.clients.GenreClientImpl;
-import com.example.EdufyVideo.clients.ThumbClientImpl;
-import com.example.EdufyVideo.clients.UserClientImpl;
+import com.example.EdufyVideo.clients.*;
+import com.example.EdufyVideo.models.dtos.AddPlaylistDTO;
+import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
 import com.example.EdufyVideo.repositories.VideoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalTime;
+import java.util.List;
 
 //ED-316-AA Unit tests
 @ExtendWith(MockitoExtension.class)
@@ -20,13 +24,31 @@ class VideoServiceUnitTest {
     private PlaylistService mockPlaylistService;
 
     @Mock
-    private CreatorClientImpl mockCreatorClient;
+    private CreatorClient mockCreatorClient;
     @Mock
-    private GenreClientImpl mockGenreClient;
+    private GenreClient mockGenreClient;
     @Mock
-    private UserClientImpl mockUserClient;
+    private UserClient mockUserClient;
     @Mock
-    private ThumbClientImpl mockThumbClient;
+    private ThumbClient mockThumbClient;
+
+    @InjectMocks
+    private VideoServiceImpl videoService;
+
+    private AddVideoClipDTO addVideoClipDTO;
+
+    @BeforeEach
+    void setUp() {
+        addVideoClipDTO = new AddVideoClipDTO(
+                "Test title",
+                "Test Description",
+                List.of(1L,2L),
+                LocalTime.of(00:10:32),
+                List.of(1L,2L),
+                List.of(1L)
+        );
+
+    }
 
 
     @Test

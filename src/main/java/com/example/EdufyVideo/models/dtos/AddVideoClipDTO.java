@@ -14,6 +14,18 @@ public class AddVideoClipDTO {
     private List<Long> genreIds = new ArrayList<>();
     private List<Long> playlistIds = new ArrayList<>();
 
+    public AddVideoClipDTO() {}
+
+    public AddVideoClipDTO(String title, String description, List<Long> creatorIds, LocalTime length, List<Long> genreIds, List<Long> playlistIds) {
+        this.title = title;
+        this.description = description;
+        this.creatorIds = creatorIds;
+        this.length = length;
+        this.genreIds = genreIds;
+        this.playlistIds = playlistIds;
+    }
+
+
     public String getTitle() {
         return title;
     }
