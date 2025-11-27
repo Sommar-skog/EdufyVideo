@@ -189,19 +189,12 @@ public class VideoServiceImpl implements VideoService {
         if (dto.getGenreIds() == null || dto.getGenreIds().isEmpty()) {
             throw new InvalidInputException("At least one genre must be provided");
         }
-        if (dto.getGenreIds().contains(null)) {
-            throw new InvalidInputException("Genre list contains null value");
-        }
+
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {
             throw new InvalidInputException("At least one creator must be provided");
         }
-        if (dto.getCreatorIds().contains(null)) {
-            throw new InvalidInputException("Creator list contains null value");
-        }
+
         if (dto.getPlaylistIds() != null && !dto.getPlaylistIds().isEmpty()) {
-            if (dto.getPlaylistIds().contains(null)) {
-                throw new InvalidInputException("Playlist list contains null value");
-            }
             for (Long id : dto.getPlaylistIds()) {
                 if (id <= 0){
                     throw new InvalidInputException("Playlist id must be a positive number");

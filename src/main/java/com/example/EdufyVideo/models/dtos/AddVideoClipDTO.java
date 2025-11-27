@@ -78,7 +78,8 @@ public class AddVideoClipDTO {
     public List<Long> getPlaylistIds() {
         return playlistIds;
     }
-    public void setPlaylistId(List<Long> playlistId) {
+
+    public void setPlaylistIds(List<Long> playlistId) {
         this.playlistIds = playlistId;
     }
 
@@ -94,4 +95,6 @@ public class AddVideoClipDTO {
                 ", playlistId=" + playlistIds +
                 '}';
     }
+
+
 }

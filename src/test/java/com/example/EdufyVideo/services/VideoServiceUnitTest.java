@@ -1,7 +1,9 @@
 package com.example.EdufyVideo.services;
 
 import com.example.EdufyVideo.clients.*;
+import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
+import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
 import com.example.EdufyVideo.models.dtos.PlayedDTO;
 import com.example.EdufyVideo.models.dtos.UserDTO;
@@ -17,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -67,6 +68,7 @@ class VideoServiceUnitTest {
                 List.of(1L,2L),
                 List.of(1L)
         );
+        System.out.println(addVideoClipDTO);
 
         video = new VideoClip(
                 1L,
@@ -209,7 +211,7 @@ class VideoServiceUnitTest {
             List<VideoClipResponseDTO> result = videoService.getVideoClipsByTitle(title);
 
             assertEquals(1, result.size());
-            assertEquals(videoResponseDTO, result.get(0));
+            assertEquals(videoResponseDTO, result.getFirst());
 
             verify(mockVideoRepository).findVideoClipByTitleContainingIgnoreCaseAndActiveTrue(title);
         }
@@ -429,6 +431,286 @@ class VideoServiceUnitTest {
     }
 
     @Test
-    void addVideoClip() {
+    void addVideoClipShouldThrowWhenTitleIsNull(){
+        addVideoClipDTO.setTitle(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Title cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
     }
+
+    @Test
+    void addVideoClipShouldThrowWhenTitleIsTooLong(){
+        addVideoClipDTO.setTitle("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Title cannot exceed 100 characters", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenTitleBlank(){
+        addVideoClipDTO.setTitle("");
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Title cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenUrlBlank(){
+        addVideoClipDTO.setUrl("");
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Url cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenUrlNull(){
+        addVideoClipDTO.setUrl(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Url cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenUrlInvalid() {
+        addVideoClipDTO.setUrl("fppt://test.se");
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Url must start with http:// or https://", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenDescriptionBlank(){
+        addVideoClipDTO.setDescription("");
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Description cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenDescriptionNull(){
+        addVideoClipDTO.setDescription(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Description cannot be null or blank", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenDescriptionIsTooLong(){
+        String desc256 = "a".repeat(256);
+        addVideoClipDTO.setDescription(desc256);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Description cannot exceed 255 characters", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenLengthIsNull(){
+        addVideoClipDTO.setLength(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Length cannot be null", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenLengthIsZero(){
+        addVideoClipDTO.setLength(LocalTime.of(0, 0,0));
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("Length cannot be 00:00:00", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenGenreIdsIsNull(){
+        addVideoClipDTO.setGenreIds(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("At least one genre must be provided", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenGenreIdsIsEmpty(){
+        addVideoClipDTO.setGenreIds(List.of());
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("At least one genre must be provided", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenCreatorIdsIsNull(){
+        addVideoClipDTO.setCreatorIds(null);
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("At least one creator must be provided", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenCreatorIdsIsEmpty(){
+        addVideoClipDTO.setCreatorIds(List.of());
+
+        InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
+                videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("At least one creator must be provided", exception.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldThrowWhenPlaylistIdIsNotPositive() {
+        addVideoClipDTO.setPlaylistIds(List.of(-1L));
+
+        InvalidInputException ex = assertThrows(
+                InvalidInputException.class,
+                () -> videoService.addVideoClip(addVideoClipDTO)
+        );
+
+        assertEquals("Playlist id must be a positive number", ex.getMessage());
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+    @Test
+    void addVideoClipShouldNotValidatePlaylistIdsWhenListIsNullOrEmpty() {
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.existsByUrl(any())).thenReturn(false);
+        when(mockVideoRepository.findWithPlaylists(any())).thenReturn(video);
+
+        addVideoClipDTO.setPlaylistIds(null);
+        videoService.addVideoClip(addVideoClipDTO);
+        verify(mockPlaylistService, never()).addVideoClipToPlaylists(any(), any());
+
+        addVideoClipDTO.setPlaylistIds(Collections.emptyList());
+        videoService.addVideoClip(addVideoClipDTO);
+        verify(mockPlaylistService, never()).addVideoClipToPlaylists(any(), any());
+    }
+
+
+    @Test
+    void addVideoClipShouldThrowWhenUrlIsNotUnique() {
+        addVideoClipDTO.setUrl("https://duplicate.com");
+
+        when(mockVideoRepository.existsByUrl("https://duplicate.com")).thenReturn(true);
+
+        UniqueConflictException ex = assertThrows(
+                UniqueConflictException.class, () -> videoService.addVideoClip(addVideoClipDTO));
+
+        assertEquals("url: {https://duplicate.com} already exists, duplicates is not allowed.", ex.getMessage());
+
+        verify(mockVideoRepository).existsByUrl("https://duplicate.com");
+        verify(mockVideoRepository, never()).save(any());
+    }
+
+
+
+    @Test
+    void addVideoClipShouldSaveVideoClipAndReturnMappedDto(){
+        VideoClip saved = mock(VideoClip.class);
+        when(mockVideoRepository.save(any())).thenReturn(saved);
+
+        VideoClip withPlaylists = mock(VideoClip.class);
+        when(mockVideoRepository.findWithPlaylists(any())).thenReturn(withPlaylists);
+
+        try (MockedStatic<VideoClipResponseMapper> mapper = mockStatic(VideoClipResponseMapper.class)) {
+
+            mapper.when(() ->
+                    VideoClipResponseMapper.toDTOAdmin(withPlaylists, mockCreatorClient, mockGenreClient)
+            ).thenReturn(videoResponseDTO);
+
+            VideoClipResponseDTO result = videoService.addVideoClip(addVideoClipDTO);
+
+            assertEquals(videoResponseDTO, result);
+            verify(mockVideoRepository).save(any());
+            verify(mockVideoRepository).findWithPlaylists(any());
+            mapper.verify(() -> VideoClipResponseMapper.toDTOAdmin(withPlaylists, mockCreatorClient, mockGenreClient), times(1));
+        }
+    }
+
+    @Test
+    void addVideoClipShouldCallPlaylistServiceWhenPlaylistIdsExist() {
+        addVideoClipDTO.setPlaylistIds(List.of(10L, 20L));
+
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(1L)).thenReturn(video);
+
+        try (MockedStatic<VideoClipResponseMapper> mocked = mockStatic(VideoClipResponseMapper.class)) {
+            mocked.when(() -> VideoClipResponseMapper.toDTOAdmin(any(), any(), any()))
+                    .thenReturn(videoResponseDTO);
+
+            videoService.addVideoClip(addVideoClipDTO);
+
+            verify(mockPlaylistService).addVideoClipToPlaylists(List.of(10L, 20L), video);
+        }
+    }
+
+    @Test
+    void addVideoClipShouldNotCallPlaylistServiceWhenPlaylistIdsNullOrEmpty() {
+
+    }
+
+    @Test
+    void addVideoClipShouldCallGenreClientWithCorrectValues(){
+
+    }
+
+    @Test
+    void addVideoClipShouldCallThumbClientWithCorrectValues() {
+
+    }
+
+    @Test
+    void addVideoClipShouldCallCreatorClientWithCorrectValues(){
+
+    }
+
+    @Test
+    void addVideoClipShouldMapUsingToDTOAdmin() {
+
+    }
+
+    @Test
+    void addVideoClipShouldReloadVideoClipBeforeMapping() {
+
+    }
+
 }
