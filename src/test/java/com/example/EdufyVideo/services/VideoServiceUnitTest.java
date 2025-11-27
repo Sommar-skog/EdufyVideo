@@ -3,6 +3,7 @@ package com.example.EdufyVideo.services;
 import com.example.EdufyVideo.clients.*;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
+import com.example.EdufyVideo.models.dtos.PlayedDTO;
 import com.example.EdufyVideo.models.dtos.UserDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,13 +25,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 //ED-316-AA Unit tests
@@ -56,6 +54,7 @@ class VideoServiceUnitTest {
     private AddVideoClipDTO addVideoClipDTO;
     private VideoClip video;
     private VideoClipResponseDTO videoResponseDTO;
+    Authentication auth;
 
     @BeforeEach
     void setUp() {
@@ -82,7 +81,7 @@ class VideoServiceUnitTest {
         );
 
         videoResponseDTO = new VideoClipResponseDTO();
-
+        auth = mock(Authentication.class);
     }
 
     @Test
@@ -232,7 +231,6 @@ class VideoServiceUnitTest {
 
     @Test
     void getAllVideoClipsShouldReturnAdminDtosWhenRoleIsAdmin() {
-        Authentication auth = mock(Authentication.class);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_admin"))).when(auth).getAuthorities();
 
         when(mockVideoRepository.findAll()).thenReturn(List.of(video));
@@ -252,12 +250,10 @@ class VideoServiceUnitTest {
             verify(mockVideoRepository).findAll();
             verify(mockVideoRepository, never()).findAllByActiveTrue();
         }
-
     }
 
     @Test
     void getAllVideoClipsShouldReturnEmptyListWhenRepositoryReturnsEmptyListForAdmin(){
-        Authentication auth = mock(Authentication.class);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_admin"))).when(auth).getAuthorities();
 
         when(mockVideoRepository.findAll()).thenReturn(List.of());
@@ -272,7 +268,6 @@ class VideoServiceUnitTest {
 
     @Test
     void getAllVideoClipsShouldReturnUserDtosWhenRoleIsUser(){
-        Authentication auth = mock(Authentication.class);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
 
         when(mockVideoRepository.findAllByActiveTrue()).thenReturn(List.of(video));
@@ -296,7 +291,6 @@ class VideoServiceUnitTest {
 
     @Test
     void getAllVideoClipsShouldReturnEmptyListWhenRepositoryReturnsEmptyListForUser(){
-        Authentication auth = mock(Authentication.class);
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
 
         when(mockVideoRepository.findAllByActiveTrue()).thenReturn(List.of());
@@ -312,10 +306,7 @@ class VideoServiceUnitTest {
 
     @Test
     void playVideoClipShouldThrowWhenUserIdIsNull() {
-        Authentication auth = mock(Authentication.class);
-        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
-
-        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(null, null, null));
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(null));
         when(auth.getName()).thenReturn("0000000000000000");
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
@@ -324,22 +315,64 @@ class VideoServiceUnitTest {
         assertEquals("UserClientImpl returned id null", exception.getMessage());
         verify(mockVideoRepository, never()).findVideoClipByIdAndActiveTrue(any());
         verify(mockVideoRepository, never()).save(any());
-
     }
 
     @Test
     void playVideoClipShouldThrowWhenVideoNotFound(){
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(1L));
+        when(auth.getName()).thenReturn("0000000000000000");
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L)).thenReturn(Optional.empty());
 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                videoService.playVideoClip(1L, auth));
+
+        assertEquals("Active VideoClip not found with id: 1", exception.getMessage());
+        verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+        verify(mockVideoRepository, never()).save(any());
     }
 
     @Test
     void playVideoClipShouldIncreaseUserHistoryCountWhenEntryExists(){
+        Map<Long, Long> history = new HashMap<>();
+        history.put(1L, 4L);
+        video.setUserHistory(history);
 
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(1L));
+        when(auth.getName()).thenReturn("0000000000000000");
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L)).thenReturn(Optional.of(video));
+
+        videoService.playVideoClip(1L,auth);
+
+        assertEquals(5L, (long) video.getUserHistory().get(1L));
+        verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+        verify(mockVideoRepository).save(any());
+    }
+
+    @Test
+    void playVideoClipShouldAddHistoryEntryWhenUserHasNoHistory(){
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(1L));
+        when(auth.getName()).thenReturn("0000000000000000");
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L)).thenReturn(Optional.of(video));
+
+        videoService.playVideoClip(1L,auth);
+
+        assertTrue(video.getUserHistory().containsKey(1L));
+        assertEquals(1L, (long) video.getUserHistory().get(1L));
+        verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+        verify(mockVideoRepository).save(any());
     }
 
     @Test
     void playVideoClipShouldReturnCorrectPlayedDTO(){
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(1L));
+        when(auth.getName()).thenReturn("0000000000000000");
+        when(mockVideoRepository.findVideoClipByIdAndActiveTrue(1L)).thenReturn(Optional.of(video));
 
+        PlayedDTO result = videoService.playVideoClip(1L,auth);
+
+        assertEquals(video.getUrl(), result.getUrl());
+        verify(mockVideoRepository).findVideoClipByIdAndActiveTrue(1L);
+        verify(mockVideoRepository).save(any());
     }
 
     @Test
