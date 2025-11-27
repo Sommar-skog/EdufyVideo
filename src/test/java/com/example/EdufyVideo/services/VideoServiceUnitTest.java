@@ -3,6 +3,7 @@ package com.example.EdufyVideo.services;
 import com.example.EdufyVideo.clients.*;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
+import com.example.EdufyVideo.models.dtos.UserDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
@@ -310,7 +311,35 @@ class VideoServiceUnitTest {
     }
 
     @Test
-    void playVideoClip() {
+    void playVideoClipShouldThrowWhenUserIdIsNull() {
+        Authentication auth = mock(Authentication.class);
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_video_user"))).when(auth).getAuthorities();
+
+        when(mockUserClient.getUserBySub("0000000000000000")).thenReturn(new UserDTO(null, null, null));
+        when(auth.getName()).thenReturn("0000000000000000");
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                videoService.playVideoClip(1L, auth));
+
+        assertEquals("UserClientImpl returned id null", exception.getMessage());
+        verify(mockVideoRepository, never()).findVideoClipByIdAndActiveTrue(any());
+        verify(mockVideoRepository, never()).save(any());
+
+    }
+
+    @Test
+    void playVideoClipShouldThrowWhenVideoNotFound(){
+
+    }
+
+    @Test
+    void playVideoClipShouldIncreaseUserHistoryCountWhenEntryExists(){
+
+    }
+
+    @Test
+    void playVideoClipShouldReturnCorrectPlayedDTO(){
+
     }
 
     @Test
