@@ -376,7 +376,56 @@ class VideoServiceUnitTest {
     }
 
     @Test
-    void getUserHistory() {
+    void getUserHistoryShouldReturnEmptyListWhenNoHistoryExists(){
+        when(mockVideoRepository.findVideoIdsByUserIdInHistory(1L)).thenReturn(List.of());
+
+            List<VideoClipResponseDTO> result = videoService.getUserHistory(1L);
+
+            assertEquals(0, result.size());
+            verify(mockVideoRepository).findVideoIdsByUserIdInHistory(1L);
+
+    }
+
+    @Test
+    void getUserHistoryShouldReturnMappedDtosWhenHistoryExists(){
+        when(mockVideoRepository.findVideoIdsByUserIdInHistory(1L)).thenReturn(List.of(video.getId()));
+
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(VideoClipResponseMapper.class)) {
+            mockedMapper.when(
+                    () -> VideoClipResponseMapper.toDTOClientJustId(video.getId())
+            ).thenReturn(videoResponseDTO);
+
+            List<VideoClipResponseDTO> result = videoService.getUserHistory(1L);
+
+            assertEquals(1, result.size());
+            assertEquals(videoResponseDTO, result.getFirst());
+            verify(mockVideoRepository).findVideoIdsByUserIdInHistory(1L);
+        }
+    }
+
+    @Test
+    void getUserHistoryShouldMapEachVideoIdExactlyOnce(){
+        VideoClipResponseDTO dto1 = new VideoClipResponseDTO();
+        VideoClipResponseDTO dto2 = new VideoClipResponseDTO();
+        VideoClipResponseDTO dto3 = new VideoClipResponseDTO();
+
+        when(mockVideoRepository.findVideoIdsByUserIdInHistory(1L)).thenReturn(List.of(1L,2L,3L));
+
+        try (MockedStatic<VideoClipResponseMapper> mockedMapper = mockStatic(VideoClipResponseMapper.class)) {
+            mockedMapper.when(() -> VideoClipResponseMapper.toDTOClientJustId(1L))
+                    .thenReturn(dto1);
+            mockedMapper.when(() -> VideoClipResponseMapper.toDTOClientJustId(2L))
+                    .thenReturn(dto2);
+            mockedMapper.when(() -> VideoClipResponseMapper.toDTOClientJustId(3L))
+                    .thenReturn(dto3);
+
+            List<VideoClipResponseDTO> result = videoService.getUserHistory(1L);
+
+            assertEquals(List.of(dto1, dto2, dto3), result);
+            mockedMapper.verify(() -> VideoClipResponseMapper.toDTOClientJustId(1L), times(1));
+            mockedMapper.verify(() -> VideoClipResponseMapper.toDTOClientJustId(2L), times(1));
+            mockedMapper.verify(() -> VideoClipResponseMapper.toDTOClientJustId(3L), times(1));
+        }
     }
 
     @Test
