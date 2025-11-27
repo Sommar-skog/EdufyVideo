@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.models.dtos.mappers;
 
-import com.example.EdufyVideo.clients.CreatorClientImpl;
-import com.example.EdufyVideo.clients.GenreClientImpl;
+import com.example.EdufyVideo.clients.CreatorClient;
+import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.models.dtos.PlaylistInfoDTO;
 import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
@@ -15,18 +15,18 @@ public class VideoClipResponseMapper {
 
 
     //ED-61-AA //ED-277-AA
-    public static VideoClipResponseDTO toDTOAdmin(VideoClip videoClip, CreatorClientImpl creatorClientImpl, GenreClientImpl genreClientImpl) {
+    public static VideoClipResponseDTO toDTOAdmin(VideoClip videoClip, CreatorClient creatorClient, GenreClient genreClient) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
         dto.setId(videoClip.getId());
         dto.setTitle(videoClip.getTitle());
         dto.setCreatorUsernames(
-                creatorClientImpl.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+                creatorClient.getCreatorIdAndUsernameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setDescription(videoClip.getDescription());
         dto.setGenreNames(
-                genreClientImpl.getGenreIdAndNameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+                genreClient.getGenreIdAndNameByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setUrl(videoClip.getUrl());
         dto.setLength(videoClip.getLength());
@@ -39,17 +39,17 @@ public class VideoClipResponseMapper {
     }
 
     //ED-277-AA
-    public static VideoClipResponseDTO toDTOUser(VideoClip videoClip, CreatorClientImpl creatorClientImpl, GenreClientImpl genreClientImpl) {
+    public static VideoClipResponseDTO toDTOUser(VideoClip videoClip, CreatorClient creatorClient, GenreClient genreClient) {
         List<PlaylistInfoDTO> playlists = getPlaylistInfoDTOS(videoClip);
 
         VideoClipResponseDTO dto = new VideoClipResponseDTO();
         dto.setTitle(videoClip.getTitle());
         dto.setCreatorUsernames(
-                creatorClientImpl.getCreatorUsernamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+                creatorClient.getCreatorUsernamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setDescription(videoClip.getDescription());
         dto.setGenreNames(
-                genreClientImpl.getGenreNamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
+                genreClient.getGenreNamesByMedia(MediaType.VIDEO_CLIP, videoClip.getId())
         );
         dto.setUrl(videoClip.getUrl());
         dto.setLength(videoClip.getLength());

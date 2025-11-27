@@ -10,7 +10,6 @@ public class ResourceNotFoundException extends RuntimeException {
     private String resource;
     private String field;
     private Object fieldValue;
-    private String message;
 
     public ResourceNotFoundException(String resource, String field, Object fieldValue) {
         super(String.format("%s not found with %s: %s", resource, field, fieldValue));
@@ -22,7 +21,7 @@ public class ResourceNotFoundException extends RuntimeException {
     //ED-255-AA
     public ResourceNotFoundException(String message){
         super(message);
-        this.message = message;
+
     }
 
     public String getResource() {
@@ -37,7 +36,4 @@ public class ResourceNotFoundException extends RuntimeException {
         return fieldValue;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

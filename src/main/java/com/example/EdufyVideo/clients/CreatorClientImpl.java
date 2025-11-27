@@ -20,7 +20,7 @@ import java.util.Objects;
 
 //ED-61-AA
 @Service
-public class CreatorClientImpl implements ClientService {
+public class CreatorClientImpl implements CreatorClient {
 
     private final RestClient restClient;
     private final Keycloak keycloak;

@@ -23,6 +23,10 @@ public class UserDTO {
         this.active = active;
     }
 
+    public UserDTO(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
