@@ -32,7 +32,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-//ED-316-AA Unit tests
+//ED-316-AA All unit tests
 @ExtendWith(MockitoExtension.class)
 class VideoServiceUnitTest {
 
@@ -495,7 +495,44 @@ class VideoServiceUnitTest {
 
         assertEquals("Url must start with http:// or https://", exception.getMessage());
         verify(mockVideoRepository, never()).save(any());
+    }
 
+    @Test
+    void addVideoClipShouldAcceptValidHttpUrl() {
+        addVideoClipDTO.setUrl("http://example.com");
+
+        when(mockVideoRepository.existsByUrl("http://example.com"))
+                .thenReturn(false);
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(anyLong())).thenReturn(video);
+
+        try (MockedStatic<VideoClipResponseMapper> mapper = mockStatic(VideoClipResponseMapper.class)) {
+            mapper.when(() -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient))
+                    .thenReturn(videoResponseDTO);
+
+            VideoClipResponseDTO result = videoService.addVideoClip(addVideoClipDTO);
+
+            assertNotNull(result);
+        }
+    }
+
+    @Test
+    void addVideoClipShouldAcceptValidHttpsUrl() {
+        addVideoClipDTO.setUrl("https://example.com");
+
+        when(mockVideoRepository.existsByUrl("https://example.com"))
+                .thenReturn(false);
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(anyLong())).thenReturn(video);
+
+        try (MockedStatic<VideoClipResponseMapper> mapper = mockStatic(VideoClipResponseMapper.class)) {
+            mapper.when(() -> VideoClipResponseMapper.toDTOAdmin(video, mockCreatorClient, mockGenreClient))
+                    .thenReturn(videoResponseDTO);
+
+            VideoClipResponseDTO result = videoService.addVideoClip(addVideoClipDTO);
+
+            assertNotNull(result);
+        }
     }
 
     @Test
