@@ -11,6 +11,7 @@ import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -685,32 +686,102 @@ class VideoServiceUnitTest {
 
     @Test
     void addVideoClipShouldNotCallPlaylistServiceWhenPlaylistIdsNullOrEmpty() {
+        addVideoClipDTO.setPlaylistIds(null);
 
+        VideoClip saved = mock(VideoClip.class);
+        when(mockVideoRepository.save(any())).thenReturn(saved);
+        when(mockVideoRepository.findWithPlaylists(anyLong())).thenReturn(saved);
+
+        try (MockedStatic<VideoClipResponseMapper> mapper = mockStatic(VideoClipResponseMapper.class)) {
+            mapper.when(() -> VideoClipResponseMapper.toDTOAdmin(any(), any(), any()))
+                    .thenReturn(videoResponseDTO);
+
+            videoService.addVideoClip(addVideoClipDTO);
+
+            verify(mockPlaylistService, never()).addVideoClipToPlaylists(any(), any());
+        }
     }
 
     @Test
     void addVideoClipShouldCallGenreClientWithCorrectValues(){
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(video.getId())).thenReturn(video);
 
+        videoService.addVideoClip(addVideoClipDTO);
+
+        verify(mockGenreClient).createRecordeOfMedia(
+                MediaType.VIDEO_CLIP,
+                video.getId(),
+                addVideoClipDTO.getGenreIds()
+        );
     }
 
     @Test
     void addVideoClipShouldCallThumbClientWithCorrectValues() {
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(video.getId())).thenReturn(video);
 
+        videoService.addVideoClip(addVideoClipDTO);
+
+        verify(mockThumbClient).createRecordeOfMedia(
+                MediaType.VIDEO_CLIP,
+                video.getId(),
+                video.getTitle()
+        );
     }
 
     @Test
     void addVideoClipShouldCallCreatorClientWithCorrectValues(){
+        when(mockVideoRepository.save(any())).thenReturn(video);
+        when(mockVideoRepository.findWithPlaylists(anyLong())).thenReturn(video);
 
+        videoService.addVideoClip(addVideoClipDTO);
+
+        verify(mockCreatorClient).createRecordeOfMedia(
+                MediaType.VIDEO_CLIP,
+                video.getId(),
+                addVideoClipDTO.getCreatorIds()
+        );
     }
 
     @Test
     void addVideoClipShouldMapUsingToDTOAdmin() {
+        VideoClip saved = new VideoClip("t","u","d",LocalTime.of(0,1,0));
+        saved.setId(10L);
 
+        when(mockVideoRepository.save(any(VideoClip.class))).thenReturn(saved);
+        when(mockVideoRepository.findWithPlaylists(10L)).thenReturn(saved);
+
+        try (MockedStatic<VideoClipResponseMapper> mocked = mockStatic(VideoClipResponseMapper.class)) {
+
+            VideoClipResponseDTO dto = new VideoClipResponseDTO();
+            mocked.when(() -> VideoClipResponseMapper.toDTOAdmin(saved, mockCreatorClient, mockGenreClient))
+                    .thenReturn(dto);
+
+            VideoClipResponseDTO result = videoService.addVideoClip(addVideoClipDTO);
+
+            assertSame(dto, result);
+            mocked.verify(() -> VideoClipResponseMapper.toDTOAdmin(saved, mockCreatorClient, mockGenreClient), times(1));
+        }
     }
 
     @Test
     void addVideoClipShouldReloadVideoClipBeforeMapping() {
+        VideoClip saved = mock(VideoClip.class);
+        VideoClip reloaded = mock(VideoClip.class);
 
+        when(mockVideoRepository.save(any())).thenReturn(saved);
+        when(mockVideoRepository.findWithPlaylists(saved.getId())).thenReturn(reloaded);
+
+        try (MockedStatic<VideoClipResponseMapper> mapper = mockStatic(VideoClipResponseMapper.class)) {
+            mapper.when(() -> VideoClipResponseMapper.toDTOAdmin(eq(reloaded), any(), any()))
+                    .thenReturn(videoResponseDTO);
+
+            videoService.addVideoClip(addVideoClipDTO);
+
+            verify(mockVideoRepository).findWithPlaylists(saved.getId());
+            mapper.verify(() -> VideoClipResponseMapper.toDTOAdmin(eq(reloaded), any(), any()));
+        }
     }
 
 }
