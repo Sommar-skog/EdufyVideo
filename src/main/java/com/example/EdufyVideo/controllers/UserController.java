@@ -14,22 +14,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-    //ED-78-AA
-    @RestController
-    @RequestMapping("/video")
-    @PreAuthorize("hasRole('video_user')")
-    public class UserController {
+//ED-78-AA
+@RestController
+@RequestMapping("/video")
+@PreAuthorize("hasRole('video_user')")
+public class UserController {
 
-        private final VideoService videoService;
-        private final PlaylistService playlistService;
-        private final VideoAggregationService videoAggregationService;
+    private final VideoService videoService;
+    private final PlaylistService playlistService;
+    private final VideoAggregationService videoAggregationService;
 
-        @Autowired
-        public UserController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
-            this.videoService = videoService;
-            this.playlistService = playlistService;
-            this.videoAggregationService = videoAggregationService;
-        }
+    @Autowired
+    public UserController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
+        this.videoService = videoService;
+        this.playlistService = playlistService;
+        this.videoAggregationService = videoAggregationService;
+    }
 
     //ED-57-AA
     @GetMapping("/videoclip-title")
@@ -54,8 +54,4 @@ import java.util.List;
     public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
             return ResponseEntity.ok(videoService.playVideoClip(videoClipId, auth));
     }
-
-
-
-
 }

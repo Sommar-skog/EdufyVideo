@@ -32,11 +32,13 @@ public class AminController {
         return ResponseEntity.ok(videoService.addVideoClip(dto));
     }
 
+    //AA
     @PostMapping("/playlist")
     public ResponseEntity<VideoPlaylistResponseDTO> addPlaylist(@RequestBody AddPlaylistDTO dto){
         return ResponseEntity.ok(playlistService.addPlaylist(dto));
     }
 
+    //AA
     @PostMapping("/playlist/{playlistid}/videoclips/add")
     public ResponseEntity<VideoPlaylistResponseDTO> addVideoClipsToPlaylist(@PathVariable("playlistid") Long playlistId, @RequestBody AddVClipToPlaylistDTO dto) {
         return ResponseEntity.ok(playlistService.addVideoClipsToPlaylist(playlistId, dto));

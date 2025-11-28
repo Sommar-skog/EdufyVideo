@@ -25,6 +25,7 @@ public class ClientController {
         this.videoService = videoService;
     }
 
+    //ED-282-AA
     @GetMapping("/user-history/{userId}")
     public ResponseEntity<List<VideoClipResponseDTO>> getUserHistory(@PathVariable Long userId){
         return ResponseEntity.ok(videoService.getUserHistory(userId));
