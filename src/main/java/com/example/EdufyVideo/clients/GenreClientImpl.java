@@ -110,7 +110,7 @@ public class GenreClientImpl implements GenreClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("GENRE UNKNOWN");
+            return List.of("GENRE UNKNOWN " + e.getMessage());
         }
     }
 

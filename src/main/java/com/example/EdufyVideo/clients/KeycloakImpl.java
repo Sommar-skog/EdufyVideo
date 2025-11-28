@@ -19,6 +19,7 @@ public class KeycloakImpl implements Keycloak {
     private final String clientSecret;
     private final String clientId;
 
+    //ED-345-AA
     public KeycloakImpl(RestClient.Builder restClientBuilder,
                         @Value("${keycloak.url}") String keycloakUrl,
                         @Value("${video.client.id}") String clientId,
@@ -29,6 +30,7 @@ public class KeycloakImpl implements Keycloak {
         this.clientSecret = clientSecret;
     }
 
+    //ED-345-AA
     @Override
     public String getAccessToken() {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -44,7 +46,6 @@ public class KeycloakImpl implements Keycloak {
                 .retrieve()
                 .body(TokenResponse.class);
 
-        // Return access token
         assert tokenResponse != null;
         return tokenResponse.accessToken();
     }

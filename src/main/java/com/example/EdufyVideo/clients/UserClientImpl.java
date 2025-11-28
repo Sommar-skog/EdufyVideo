@@ -17,6 +17,7 @@ public class UserClientImpl implements UserClient {
         this.keycloak = keycloak;
     }
 
+    //ED-282-AA
     public UserDTO getUserBySub(String sub) {
         try {
             return restClient.get()

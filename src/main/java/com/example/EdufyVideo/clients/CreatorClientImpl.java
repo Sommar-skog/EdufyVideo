@@ -144,7 +144,7 @@ public class CreatorClientImpl implements CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN" + e.getMessage());
+            return List.of("CREATOR UNKNOWN " + e.getMessage());
         }
     }
 

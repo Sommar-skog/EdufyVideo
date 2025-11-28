@@ -24,6 +24,7 @@ public class ThumbClientImpl implements ThumbClient {
         this.keycloak = keycloak;
     }
 
+    //ED-243-AA
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, String mediaName) {
         try {
              ResponseEntity<Void> response= restClient.post()
