@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.dtos.videos.inputs;
+package com.example.EdufyVideo.models.dtos.videos.responses;
 
 public class PlayedDTO {
 

@@ -5,7 +5,7 @@ import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.videos.inputs.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlayedDTO;
 import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
