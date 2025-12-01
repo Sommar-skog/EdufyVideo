@@ -21,7 +21,6 @@ public class ResourceNotFoundException extends RuntimeException {
     //ED-255-AA
     public ResourceNotFoundException(String message){
         super(message);
-
     }
 
     public String getResource() {

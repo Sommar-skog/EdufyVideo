@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.enteties;
+package com.example.EdufyVideo.models.entities;
 
 
 import jakarta.persistence.*;
@@ -55,6 +55,7 @@ public class VideoPlaylist {
     }
 
     public VideoPlaylist(VideoPlaylist videoPlaylist) {
+        this.id = videoPlaylist.id;
         this.title = videoPlaylist.title;
         this.url = videoPlaylist.url;
         this.description = videoPlaylist.description;

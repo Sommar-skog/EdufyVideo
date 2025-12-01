@@ -3,11 +3,15 @@ package com.example.EdufyVideo.services;
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
-import com.example.EdufyVideo.models.dtos.*;
-import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
-import com.example.EdufyVideo.models.dtos.mappers.VideoPlaylistResponseMapper;
-import com.example.EdufyVideo.models.enteties.VideoClip;
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.dtos.clients.creators.MediaDTO;
+import com.example.EdufyVideo.models.dtos.clients.genres.MediaByGenreDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
+import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoPlaylistResponseMapper;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideographyResponseDTO;
+import com.example.EdufyVideo.models.entities.VideoClip;
+import com.example.EdufyVideo.models.entities.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import com.example.EdufyVideo.repositories.VideoRepository;
@@ -53,7 +57,6 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             );
             clips.add(videoClip);
         });
-
         return clips.stream().map(c -> VideoClipResponseMapper.toDTOUser(c, creatorClient, genreClient)).collect(Collectors.toList());
     }
 
@@ -120,5 +123,4 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
                 .map(Optional::get)
                 .toList();
     }
-
 }

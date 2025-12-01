@@ -2,7 +2,7 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.RegisterMediaThumbDTO;
+import com.example.EdufyVideo.models.dtos.clients.thumbs.RegisterMediaThumbDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,7 @@ public class ThumbClientImpl implements ThumbClient {
         this.keycloak = keycloak;
     }
 
+    //ED-243-AA
     public boolean createRecordeOfMedia(MediaType mediaType, Long mediaId, String mediaName) {
         try {
              ResponseEntity<Void> response= restClient.post()

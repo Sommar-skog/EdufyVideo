@@ -13,7 +13,7 @@ public class InvalidInputException extends RuntimeException {
     private String message;
 
     public InvalidInputException(String object, String field, Object value) {
-        super(String.format("Invalid input: %S [%s] cannot be %s.", object, field, value));
+        super(String.format("Invalid inputs: %S [%s] cannot be %s.", object, field, value));
         this.object = object;
         this.field = field;
         this.value = value;

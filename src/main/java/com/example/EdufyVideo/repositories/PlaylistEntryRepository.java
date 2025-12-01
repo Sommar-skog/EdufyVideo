@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.repositories;
 
-import com.example.EdufyVideo.models.enteties.PlaylistEntry;
+import com.example.EdufyVideo.models.entities.PlaylistEntry;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

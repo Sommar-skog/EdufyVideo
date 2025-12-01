@@ -2,9 +2,9 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.MediaByGenreDTO;
-import com.example.EdufyVideo.models.dtos.RegisterMediaGenreDTO;
-import com.example.EdufyVideo.models.dtos.GenreDTO;
+import com.example.EdufyVideo.models.dtos.clients.genres.MediaByGenreDTO;
+import com.example.EdufyVideo.models.dtos.clients.genres.RegisterMediaGenreDTO;
+import com.example.EdufyVideo.models.dtos.clients.genres.GenreDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -95,7 +95,7 @@ public class GenreClientImpl implements GenreClient {
         }
     }
 
-    //ED-278-AA – Helper to return genre names directly
+    //ED-278-AA – Helper to return genres names directly
     public List<String> getGenreNamesByMedia(MediaType mediaType, long mediaId) {
         try {
             List<GenreDTO> genres = getGenresByMediaTypeAndMediaId(mediaType, mediaId);
@@ -110,7 +110,7 @@ public class GenreClientImpl implements GenreClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("GENRE UNKNOWN");
+            return List.of("GENRE UNKNOWN " + e.getMessage());
         }
     }
 

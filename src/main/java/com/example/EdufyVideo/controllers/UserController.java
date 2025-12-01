@@ -1,8 +1,8 @@
 package com.example.EdufyVideo.controllers;
 
-import com.example.EdufyVideo.models.dtos.PlayedDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlayedResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
 import com.example.EdufyVideo.services.VideoAggregationService;
 import com.example.EdufyVideo.services.VideoService;
@@ -14,22 +14,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-    //ED-78-AA
-    @RestController
-    @RequestMapping("/video")
-    @PreAuthorize("hasRole('video_user')")
-    public class UserController {
+//ED-78-AA
+@RestController
+@RequestMapping("/video")
+@PreAuthorize("hasRole('video_user')")
+public class UserController {
 
-        private final VideoService videoService;
-        private final PlaylistService playlistService;
-        private final VideoAggregationService videoAggregationService;
+    private final VideoService videoService;
+    private final PlaylistService playlistService;
+    private final VideoAggregationService videoAggregationService;
 
-        @Autowired
-        public UserController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
-            this.videoService = videoService;
-            this.playlistService = playlistService;
-            this.videoAggregationService = videoAggregationService;
-        }
+    @Autowired
+    public UserController(VideoService videoService, PlaylistService playlistService, VideoAggregationService videoAggregationService) {
+        this.videoService = videoService;
+        this.playlistService = playlistService;
+        this.videoAggregationService = videoAggregationService;
+    }
 
     //ED-57-AA
     @GetMapping("/videoclip-title")
@@ -51,11 +51,7 @@ import java.util.List;
 
     //ED-255-AA
     @GetMapping("/play/{videoClipId}")
-    public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
+    public ResponseEntity<PlayedResponseDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
             return ResponseEntity.ok(videoService.playVideoClip(videoClipId, auth));
     }
-
-
-
-
 }

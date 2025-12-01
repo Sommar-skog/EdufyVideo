@@ -1,6 +1,5 @@
-package com.example.EdufyVideo.models.dtos;
+package com.example.EdufyVideo.models.dtos.videos.inputs;
 
-import java.time.LocalDate;
 import java.util.List;
 
 //ED-244-AA

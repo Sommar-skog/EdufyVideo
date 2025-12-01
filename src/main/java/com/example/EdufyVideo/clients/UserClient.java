@@ -1,8 +1,8 @@
 package com.example.EdufyVideo.clients;
 
-import com.example.EdufyVideo.models.dtos.UserDTO;
+import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
 
 //ED-345-AA
 public interface UserClient {
-    public UserDTO getUserBySub(String sub);
+    UserDTO getUserBySub(String sub);
 }

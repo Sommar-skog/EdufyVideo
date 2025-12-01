@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.UserDTO;
+import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -17,6 +17,7 @@ public class UserClientImpl implements UserClient {
         this.keycloak = keycloak;
     }
 
+    //ED-282-AA
     public UserDTO getUserBySub(String sub) {
         try {
             return restClient.get()

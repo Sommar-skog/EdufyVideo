@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.dtos;
+package com.example.EdufyVideo.models.dtos.clients.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

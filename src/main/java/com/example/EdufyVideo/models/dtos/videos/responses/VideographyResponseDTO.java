@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.dtos;
+package com.example.EdufyVideo.models.dtos.videos.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

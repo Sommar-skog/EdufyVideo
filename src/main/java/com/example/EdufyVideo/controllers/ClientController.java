@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.controllers;
 
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +25,7 @@ public class ClientController {
         this.videoService = videoService;
     }
 
+    //ED-282-AA
     @GetMapping("/user-history/{userId}")
     public ResponseEntity<List<VideoClipResponseDTO>> getUserHistory(@PathVariable Long userId){
         return ResponseEntity.ok(videoService.getUserHistory(userId));

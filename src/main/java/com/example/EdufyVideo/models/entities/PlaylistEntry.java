@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.enteties;
+package com.example.EdufyVideo.models.entities;
 
 import jakarta.persistence.*;
 

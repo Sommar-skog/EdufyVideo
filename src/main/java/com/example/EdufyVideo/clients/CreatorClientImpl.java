@@ -2,9 +2,9 @@ package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.CreatorDTO;
-import com.example.EdufyVideo.models.dtos.MediaDTO;
-import com.example.EdufyVideo.models.dtos.RegisterMediaCreatorDTO;
+import com.example.EdufyVideo.models.dtos.clients.creators.CreatorDTO;
+import com.example.EdufyVideo.models.dtos.clients.creators.MediaDTO;
+import com.example.EdufyVideo.models.dtos.clients.creators.RegisterMediaCreatorDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -144,7 +144,7 @@ public class CreatorClientImpl implements CreatorClient {
                     .toList();
 
         } catch (RestClientException e) {
-            return List.of("CREATOR UNKNOWN" + e.getMessage());
+            return List.of("CREATOR UNKNOWN " + e.getMessage());
         }
     }
 
