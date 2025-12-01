@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.controllers;
 
-import com.example.EdufyVideo.models.dtos.videos.responses.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlayedResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
@@ -51,7 +51,7 @@ public class UserController {
 
     //ED-255-AA
     @GetMapping("/play/{videoClipId}")
-    public ResponseEntity<PlayedDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
+    public ResponseEntity<PlayedResponseDTO> playVideoClip (@PathVariable Long videoClipId, Authentication auth){
             return ResponseEntity.ok(videoService.playVideoClip(videoClipId, auth));
     }
 }

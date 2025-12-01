@@ -2,7 +2,7 @@ package com.example.EdufyVideo.services;
 
 
 import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.videos.responses.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlayedResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,5 +27,5 @@ public interface VideoService {
     VideoClipResponseDTO addVideoClip(AddVideoClipDTO addVideoClipDTO);
 
     //ED-255-AA
-    PlayedDTO playVideoClip(Long videoClipId, Authentication authentication);
+    PlayedResponseDTO playVideoClip(Long videoClipId, Authentication authentication);
 }

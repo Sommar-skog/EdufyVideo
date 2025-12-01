@@ -5,9 +5,9 @@ import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
 import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlayedResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.videos.responses.PlayedDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;
@@ -99,7 +99,7 @@ public class VideoServiceImpl implements VideoService {
 
     //ED-255-AA
     @Override
-    public PlayedDTO playVideoClip(Long videoClipId, Authentication authentication) {
+    public PlayedResponseDTO playVideoClip(Long videoClipId, Authentication authentication) {
         UserDTO user = userClient.getUserBySub(authentication.getName());
 
         if (user.getId() == null){
@@ -119,7 +119,7 @@ public class VideoServiceImpl implements VideoService {
         clip.getUserHistory().put(user.getId(), updated);
         videoRepository.save(clip);
 
-        return new PlayedDTO(clip.getUrl());
+        return new PlayedResponseDTO(clip.getUrl());
     }
 
     //ED-282-AA

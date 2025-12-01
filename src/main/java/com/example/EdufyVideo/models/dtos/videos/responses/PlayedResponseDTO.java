@@ -1,12 +1,12 @@
 package com.example.EdufyVideo.models.dtos.videos.responses;
 
-public class PlayedDTO {
+public class PlayedResponseDTO {
 
     private String url;
 
-    public PlayedDTO() {}
+    public PlayedResponseDTO() {}
 
-    public PlayedDTO(String url) {
+    public PlayedResponseDTO(String url) {
         this.url = url;
     }
 
@@ -20,7 +20,7 @@ public class PlayedDTO {
 
     @Override
     public String toString() {
-        return "PlayedDTO{" +
+        return "PlayedResponseDTO{" +
                 "url='" + url + '\'' +
                 '}';
     }
