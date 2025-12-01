@@ -13,6 +13,5 @@ public interface VideoAggregationService {
     VideographyResponseDTO getVideographyByCreator (Long creatorId, Authentication authentication);
 
     //ED-270-AA
-
     List<VideoClipResponseDTO> getVideoClipsByGenre(Long genreId);
 }

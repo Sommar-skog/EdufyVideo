@@ -57,7 +57,6 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
             );
             clips.add(videoClip);
         });
-
         return clips.stream().map(c -> VideoClipResponseMapper.toDTOUser(c, creatorClient, genreClient)).collect(Collectors.toList());
     }
 
@@ -124,5 +123,4 @@ public class VideoAggregationServiceImpl implements VideoAggregationService {
                 .map(Optional::get)
                 .toList();
     }
-
 }
