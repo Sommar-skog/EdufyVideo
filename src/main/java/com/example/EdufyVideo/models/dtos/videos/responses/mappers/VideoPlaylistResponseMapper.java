@@ -4,8 +4,8 @@ import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.models.dtos.clients.creators.CreatorDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipInfoDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
-import com.example.EdufyVideo.models.enteties.PlaylistEntry;
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.entities.PlaylistEntry;
+import com.example.EdufyVideo.models.entities.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
 
 import java.util.ArrayList;

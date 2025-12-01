@@ -10,8 +10,8 @@ import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoPlaylist
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideographyResponseDTO;
-import com.example.EdufyVideo.models.enteties.VideoClip;
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.entities.VideoClip;
+import com.example.EdufyVideo.models.entities.VideoPlaylist;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.PlaylistRepository;
 import com.example.EdufyVideo.repositories.VideoRepository;

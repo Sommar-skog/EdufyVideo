@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.models.dtos.videos.responses;
 
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.entities.VideoPlaylist;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDate;

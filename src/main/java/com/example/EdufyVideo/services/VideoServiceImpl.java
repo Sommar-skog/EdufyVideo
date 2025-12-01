@@ -9,7 +9,7 @@ import com.example.EdufyVideo.models.dtos.videos.responses.PlayedResponseDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
 import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.entities.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.VideoRepository;
 import jakarta.transaction.Transactional;

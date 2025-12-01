@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.repositories;
 
-import com.example.EdufyVideo.models.enteties.VideoClip;
+import com.example.EdufyVideo.models.entities.VideoClip;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

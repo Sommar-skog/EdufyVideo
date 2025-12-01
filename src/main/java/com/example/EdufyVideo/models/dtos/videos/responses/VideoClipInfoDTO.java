@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.models.dtos.videos.responses;
 
-import com.example.EdufyVideo.models.enteties.PlaylistEntry;
+import com.example.EdufyVideo.models.entities.PlaylistEntry;
 
 public class VideoClipInfoDTO {
 

@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.repositories;
 
-import com.example.EdufyVideo.models.enteties.VideoPlaylist;
+import com.example.EdufyVideo.models.entities.VideoPlaylist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
