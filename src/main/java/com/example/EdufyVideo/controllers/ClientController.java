@@ -1,6 +1,6 @@
 package com.example.EdufyVideo.controllers;
 
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

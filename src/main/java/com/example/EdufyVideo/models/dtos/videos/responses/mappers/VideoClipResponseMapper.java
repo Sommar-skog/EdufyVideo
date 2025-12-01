@@ -1,9 +1,9 @@
-package com.example.EdufyVideo.models.dtos.mappers;
+package com.example.EdufyVideo.models.dtos.videos.responses.mappers;
 
 import com.example.EdufyVideo.clients.CreatorClient;
 import com.example.EdufyVideo.clients.GenreClient;
-import com.example.EdufyVideo.models.dtos.PlaylistInfoDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.PlaylistInfoDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;

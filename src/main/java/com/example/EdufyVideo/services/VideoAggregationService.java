@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.services;
 
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideographyResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideographyResponseDTO;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;

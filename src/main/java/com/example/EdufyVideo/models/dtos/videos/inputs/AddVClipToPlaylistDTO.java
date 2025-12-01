@@ -1,4 +1,4 @@
-package com.example.EdufyVideo.models.dtos;
+package com.example.EdufyVideo.models.dtos.videos.inputs;
 
 import java.util.ArrayList;
 import java.util.List;

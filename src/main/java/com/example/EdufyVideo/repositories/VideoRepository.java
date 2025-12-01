@@ -22,12 +22,12 @@ public interface VideoRepository  extends JpaRepository<VideoClip, Long> {
     List<VideoClip> findAllByActiveTrue();
 
     //ED-282-AA
-    // Returns all video IDs watched by the specified user
+    // Returns all videos IDs watched by the specified user
     @Query("SELECT v.id FROM VideoClip v JOIN v.userHistory h WHERE KEY(h) = :userId")
     List<Long> findVideoIdsByUserIdInHistory(@Param("userId") Long userId);
 
     //ED-282-AA
-    // Returns how many times the given user has watched the specified video
+    // Returns how many times the given user has watched the specified videos
     @Query("SELECT VALUE(h) FROM VideoClip v JOIN v.userHistory h WHERE v.id = :videoId AND KEY(h) = :userId")
     Long findTimesPlayedByUser(@Param("videoId") Long videoId, @Param("userId") Long userId);
 

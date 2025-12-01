@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.clients;
 
 import com.example.EdufyVideo.exceptions.RestClientException;
-import com.example.EdufyVideo.models.dtos.UserDTO;
+import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 

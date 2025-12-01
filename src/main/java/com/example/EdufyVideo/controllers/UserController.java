@@ -1,8 +1,8 @@
 package com.example.EdufyVideo.controllers;
 
-import com.example.EdufyVideo.models.dtos.PlayedDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.VideoPlaylistResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.inputs.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoPlaylistResponseDTO;
 import com.example.EdufyVideo.services.PlaylistService;
 import com.example.EdufyVideo.services.VideoAggregationService;
 import com.example.EdufyVideo.services.VideoService;

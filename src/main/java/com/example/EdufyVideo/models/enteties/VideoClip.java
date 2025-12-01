@@ -131,7 +131,7 @@ public class VideoClip {
     }
 
     //ED-282-AA
-    // Tracks total play count per user for this video (userId → timesPlayed)
+    // Tracks total play count per user for this videos (userId → timesPlayed)
     public Long getTimesPlayed() {
         return userHistory.values().stream().mapToLong(Long::longValue).sum();
     }

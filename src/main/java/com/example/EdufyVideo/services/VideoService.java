@@ -1,9 +1,9 @@
 package com.example.EdufyVideo.services;
 
 
-import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.PlayedDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
+import com.example.EdufyVideo.models.dtos.videos.inputs.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

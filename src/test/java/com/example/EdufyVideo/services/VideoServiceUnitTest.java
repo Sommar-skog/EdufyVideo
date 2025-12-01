@@ -4,11 +4,11 @@ import com.example.EdufyVideo.clients.*;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
-import com.example.EdufyVideo.models.dtos.AddVideoClipDTO;
-import com.example.EdufyVideo.models.dtos.PlayedDTO;
-import com.example.EdufyVideo.models.dtos.UserDTO;
-import com.example.EdufyVideo.models.dtos.VideoClipResponseDTO;
-import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
+import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
+import com.example.EdufyVideo.models.dtos.videos.inputs.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
 import com.example.EdufyVideo.models.enteties.PlaylistEntry;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;
@@ -598,7 +598,7 @@ class VideoServiceUnitTest {
         InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
                 videoService.addVideoClip(addVideoClipDTO));
 
-        assertEquals("At least one genre must be provided", exception.getMessage());
+        assertEquals("At least one genres must be provided", exception.getMessage());
         verify(mockVideoRepository, never()).save(any());
     }
 
@@ -609,7 +609,7 @@ class VideoServiceUnitTest {
         InvalidInputException exception = assertThrows(InvalidInputException.class, () ->
                 videoService.addVideoClip(addVideoClipDTO));
 
-        assertEquals("At least one genre must be provided", exception.getMessage());
+        assertEquals("At least one genres must be provided", exception.getMessage());
         verify(mockVideoRepository, never()).save(any());
     }
 

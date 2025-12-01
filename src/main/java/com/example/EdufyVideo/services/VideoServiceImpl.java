@@ -4,8 +4,11 @@ import com.example.EdufyVideo.clients.*;
 import com.example.EdufyVideo.exceptions.InvalidInputException;
 import com.example.EdufyVideo.exceptions.ResourceNotFoundException;
 import com.example.EdufyVideo.exceptions.UniqueConflictException;
-import com.example.EdufyVideo.models.dtos.*;
-import com.example.EdufyVideo.models.dtos.mappers.VideoClipResponseMapper;
+import com.example.EdufyVideo.models.dtos.clients.users.UserDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.mappers.VideoClipResponseMapper;
+import com.example.EdufyVideo.models.dtos.videos.inputs.AddVideoClipDTO;
+import com.example.EdufyVideo.models.dtos.videos.inputs.PlayedDTO;
+import com.example.EdufyVideo.models.dtos.videos.responses.VideoClipResponseDTO;
 import com.example.EdufyVideo.models.enteties.VideoClip;
 import com.example.EdufyVideo.models.enums.MediaType;
 import com.example.EdufyVideo.repositories.VideoRepository;
@@ -187,7 +190,7 @@ public class VideoServiceImpl implements VideoService {
             throw new InvalidInputException("Length cannot be 00:00:00");
         }
         if (dto.getGenreIds() == null || dto.getGenreIds().isEmpty()) {
-            throw new InvalidInputException("At least one genre must be provided");
+            throw new InvalidInputException("At least one genres must be provided");
         }
 
         if (dto.getCreatorIds() == null || dto.getCreatorIds().isEmpty()) {

@@ -1,7 +1,7 @@
 package com.example.EdufyVideo.clients;
 
-import com.example.EdufyVideo.models.dtos.CreatorDTO;
-import com.example.EdufyVideo.models.dtos.MediaDTO;
+import com.example.EdufyVideo.models.dtos.clients.creators.CreatorDTO;
+import com.example.EdufyVideo.models.dtos.clients.creators.MediaDTO;
 import com.example.EdufyVideo.models.enums.MediaType;
 
 import java.util.List;
